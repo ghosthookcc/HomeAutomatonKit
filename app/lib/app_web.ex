@@ -17,7 +17,7 @@ defmodule AppWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images uploads favicon.ico robots.txt)
 
   def router do
     quote do
@@ -39,8 +39,7 @@ defmodule AppWeb do
   def controller do
     quote do
       use Phoenix.Controller,
-        formats: [:html, :json],
-        layouts: [html: AppWeb.Layouts]
+        formats: [:html, :json]
 
       use Gettext, backend: AppWeb.Gettext
 
@@ -52,8 +51,7 @@ defmodule AppWeb do
 
   def live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {AppWeb.Layouts, :app}
+      use Phoenix.LiveView
 
       unquote(html_helpers())
     end

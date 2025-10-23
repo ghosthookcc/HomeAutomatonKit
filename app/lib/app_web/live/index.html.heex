@@ -1,0 +1,64 @@
+<div class="p-10">
+<form id="upload-form" phx-change="validate" phx-submit="save" class="space-y-4">
+  <div id="dropzone"
+       phx-drop-target={@uploads.uploader.ref}
+       phx-hook="Dropzone"
+       class="flex flex-col items-center justify-center w-full h-64 border-4 border-dashed border-gray-300 rounded-2xl cursor-pointer bg-gray-50 hover:border-blue-400 transition-colors">
+    <.live_file_input upload={@uploads.uploader} class="hidden" />
+    <!-- <input id="directory" type="file" webkitdirectory={true} phx-hook="Dropzone" /> -->
+    <p class="text-gray-500 text-center mt-4">Drag & drop files or folders here, or click to select</p>
+
+  <p :for={err <- upload_errors(@uploads.uploader)} class="alert alert-danger">
+    {error_to_string(err)}
+  </p>
+  </div>
+
+  <ul class="mt-4 space-y-2">
+    <%= for entry <- @uploads.uploader.entries do %>
+      <li class="flex items-center justify-between p-2 border rounded shadow-sm bg-white">
+        <span><%= entry.client_name %></span>
+        <span><%= entry.progress %>%</span>
+        <span><button type="button" phx-click="cancel-upload" phx-value-ref={entry.ref} aria-label="cancel">&times</button></span>
+      </li>
+    <% end %>
+  </ul>
+
+  <button
+    type="submit"
+    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors">
+    Upload
+  </button>
+</form>
+</div>
+
+<div class="p-10">
+<Mishka.table border="large" rounded="extra_large" text_position="center" header_border="large" rows_border="medium" cols_border="medium">
+    <:header>Filename</:header>
+    <:header>Type</:header>
+    <:header>Extension</:header>
+
+    <Mishka.tr>
+      <Mishka.td>Test</Mishka.td>
+      <Mishka.td>File</Mishka.td>
+      <Mishka.td>txt</Mishka.td>
+    </Mishka.tr>
+
+    <Mishka.tr>
+      <Mishka.td>
+          <.link navigate={~p"/#"} class={["px-3 py-2 rounded-md",
+          "text-blue-700 font-semibold"]}>TestMount</.link>
+      </Mishka.td>
+      <Mishka.td>Folder</Mishka.td>
+      <Mishka.td>-</Mishka.td>
+    </Mishka.tr>
+
+    <Mishka.tr>
+      <Mishka.td>Test2</Mishka.td>
+      <Mishka.td>File</Mishka.td>
+      <Mishka.td>exe</Mishka.td> 
+    </Mishka.tr>
+
+    <:footer>Total Paths</:footer>
+    <:footer>3</:footer>
+</Mishka.table>
+</div>
