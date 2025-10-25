@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/backup_plugin_web";

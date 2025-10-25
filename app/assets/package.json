@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "dropzone": "^6.0.0-beta.2",
-    "jszip": "^3.10.1",
-    "phoenix_live_view": "^1.1.14"
-  }
-}
