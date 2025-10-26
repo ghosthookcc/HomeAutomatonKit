@@ -1,7 +1,7 @@
 defmodule DashboardWeb.Index do
   use DashboardWeb, :live_view
 
-  alias Dashboard.{PluginSupervisor, PluginLoader, PluginRegistry, PluginConfig}
+  alias Dashboard.{PluginLoader, PluginRegistry, PluginConfig}
 
   def mount(_params, _session, socket) do
     {:ok, configs} = PluginConfig.load_configs()
