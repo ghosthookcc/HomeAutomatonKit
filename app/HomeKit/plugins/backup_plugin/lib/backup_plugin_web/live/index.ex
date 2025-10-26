@@ -45,7 +45,8 @@ defmodule BackupPluginWeb.Index do
         File.mkdir_p!(Path.dirname(destination))
         File.cp!(meta.path, destination)
 
-        #upload_path = "/uploads/#{Path.basename(destination)}"
+        upload_path = "/uploads/#{Path.basename(destination)}"
+        {:ok, upload_path}
       end)
     {:noreply, 
       socket 
