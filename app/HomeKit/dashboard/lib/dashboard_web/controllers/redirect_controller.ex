@@ -3,8 +3,8 @@ defmodule DashboardWeb.RedirectController do
 
   alias Dashboard.PluginRegistry
 
-  def show(_, %{"plugin" => plugin_name}) do
-    case PluginRegistry.get(String.to_atom(plugin_name)) do
+  def show(_, %{"plugin" => plugin_key}) do
+    case PluginRegistry.get(String.to_atom(plugin_key)) do
       nil ->
         :plugin_not_found
     end

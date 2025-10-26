@@ -26,11 +26,6 @@ defmodule DashboardWeb.Router do
     live "/plugins/:plugin/*path", DynamicPluginLive, :show
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", DashboardWeb do
-  #   pipe_through :api
-  # end
-
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:dashboard, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put

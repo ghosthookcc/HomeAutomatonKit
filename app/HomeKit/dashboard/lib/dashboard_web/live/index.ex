@@ -18,20 +18,8 @@ defmodule DashboardWeb.Index do
         true -> nil
       end
 
-    {:ok, configs} = PluginConfig.load_configs()
-    config = Enum.find(configs, &(&1["name"] == plugin_name))
-
-    if plugin_name not in [nil, ""] do
-      IO.inspect("DOING THIS")
-      case PluginLoader.load_plugin(plugin_name) do
-        {:ok, _pid} -> 
-          :ok
-        {:error, reason} ->
-          IO.inspect(reason, label: "[-] Failed to load plugin")
-      end
-    end
-
-    plugins = Map.update!(socket.assigns.plugins, String.to_atom(config["atom"]), fn plugin ->
+    {:ok, _pid, atom} = PluginLoader.load_plugin(plugin_name)
+    plugins = Map.update!(socket.assigns.plugins, atom, fn plugin ->
       Map.put(plugin, :enabled, true)
     end)
 
@@ -39,15 +27,9 @@ defmodule DashboardWeb.Index do
   end
 
   def handle_event("unload_plugin", %{"name" => plugin_name} = _params, socket) do
-    {:ok, configs} = PluginConfig.load_configs()
-    config = Enum.find(configs, &(&1["name"] == plugin_name))
+    {:ok, atom} = PluginLoader.unload_plugin(plugin_name)
 
-    case Dashboard.PluginLoader.unload_plugin(config["atom"]) do
-      :ok -> :ok
-      {:error, reason} -> IO.inspect(reason, label: "[-] Failed to unload plugin")
-    end
-
-    plugins = Map.update!(socket.assigns.plugins, String.to_atom(config["atom"]), fn plugin ->
+    plugins = Map.update!(socket.assigns.plugins, atom, fn plugin ->
       Map.put(plugin, :enabled, false)
     end)
 

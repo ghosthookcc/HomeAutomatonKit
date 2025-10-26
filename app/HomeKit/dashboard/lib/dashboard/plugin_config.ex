@@ -10,13 +10,13 @@ defmodule Dashboard.PluginConfig do
     end
   end
 
-  def update_config(atomName, enabled?) do
+  def update_config(atomName, newEnabledState) do
     {:ok, configs} = load_configs()
 
     new_configs = 
       Enum.map(configs, fn cfg -> 
         if cfg["atom"] == atomName do
-          Map.put(cfg, "enabled", enabled?)
+          Map.put(cfg, "enabled", newEnabledState)
         else
           cfg
         end

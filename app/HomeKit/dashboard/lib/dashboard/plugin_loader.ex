@@ -15,11 +15,11 @@ defmodule Dashboard.PluginLoader do
     config = Enum.find(configs, &(&1["name"] == name))
 
     PluginConfig.update_config(config["atom"], true)
+    atom = String.to_atom(config["atom"])
 
     type = config["type"]
     case type do
       "Process" ->
-        IO.inspect("PROCESS")
         supervisor_module = Module.concat([config["module"], Supervisor])
         if Code.ensure_loaded?(supervisor_module) do
           pid = case PluginSupervisor.start_plugin({supervisor_module, []}) do
@@ -41,8 +41,8 @@ defmodule Dashboard.PluginLoader do
               nil
             end
 
-          PluginRegistry.register(String.to_atom(config["atom"]), liveview || supervisor_module, plugin_folder, pid)
-          {:ok, pid}
+          PluginRegistry.register(atom, liveview || supervisor_module, plugin_folder, pid)
+          {:ok, pid, atom}
         else
           {:error, :missing_supervisor}
         end
@@ -53,21 +53,24 @@ defmodule Dashboard.PluginLoader do
           |> Enum.map(&String.to_atom/1)
           |> Module.concat()
         PluginRegistry.register(String.to_atom(config["atom"]), liveview, plugin_folder, nil)
-        {:ok, :ui_only}
+        {:ok, :ui_only, atom}
       _ ->
         {:error, :unknown_type}
     end
   end
 
-  def unload_plugin(atomName) do
-    atom = String.to_atom(atomName)
+  def unload_plugin(name) do
+    {:ok, configs} = PluginConfig.load_configs()
+    config = Enum.find(configs, &(&1["name"] == name))
+
+    atom = String.to_atom(config["atom"])
     case PluginRegistry.get(atom) do
       nil -> {:error, :not_found}
       plugin ->
         if plugin.pid, do: PluginSupervisor.stop_plugin(plugin.pid)
         PluginRegistry.unregister(atom)
-        PluginConfig.update_config(atomName, false)
-        :ok
+        PluginConfig.update_config(config["atom"], false)
+        {:ok, atom}
     end
   end
 end

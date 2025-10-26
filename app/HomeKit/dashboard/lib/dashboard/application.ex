@@ -1,8 +1,4 @@
 defmodule Dashboard.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
-  @moduledoc false
-
   use Application
 
   alias Dashboard.{PluginLoader, PluginConfig}
@@ -13,29 +9,22 @@ defmodule Dashboard.Application do
       DashboardWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:dashboard, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Dashboard.PubSub},
-      # Start a worker by calling: Dashboard.Worker.start_link(arg)
-      # {Dashboard.Worker, arg},
-      # Start to serve requests, typically the last entry
+
       DashboardWeb.Endpoint,
       Dashboard.PluginRegistry,
       Dashboard.PluginSupervisor
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Dashboard.Supervisor]
     {:ok, sup} = Supervisor.start_link(children, opts)
 
     {:ok, configs} = PluginConfig.load_configs()
     for %{"name" => name,
-          "atom" => _atom,
           "module" => _cmodule,
-          "liveView" => _liveView,
-          "enabled" => enabled,
-          "type" => _type} <- configs do
-      if enabled == true do
+          "enabled" => enabled} <- configs do
+      if enabled do
         case PluginLoader.load_plugin(name) do
-          {:ok, pid} ->
+          {:ok, pid, _atom} ->
             IO.inspect("[+] Loaded plugin #{name} with pid: #{inspect(pid)} . . .")
           {:error, reason} ->
             IO.inspect("[-] Failed to load plugin #{name}: #{reason} . . .")
@@ -46,8 +35,6 @@ defmodule Dashboard.Application do
     {:ok, sup}
   end
 
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
     DashboardWeb.Endpoint.config_change(changed, removed)

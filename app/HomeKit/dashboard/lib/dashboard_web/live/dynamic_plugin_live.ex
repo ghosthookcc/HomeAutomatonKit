@@ -3,8 +3,8 @@ defmodule DashboardWeb.DynamicPluginLive do
 
   alias Dashboard.PluginRegistry
 
-  def mount(%{"plugin" => plugin_name}, _session, socket) do
-    plugin = PluginRegistry.get(String.to_atom(plugin_name))
+  def mount(%{"plugin" => plugin_key}, _session, socket) do
+    plugin = PluginRegistry.get(String.to_atom(plugin_key))
     case plugin do
       nil ->
         {:ok,
@@ -12,7 +12,10 @@ defmodule DashboardWeb.DynamicPluginLive do
           |> put_flash(:info, "⚠️ Plugin not found or not available.")
           |> push_navigate(to: "/")}
       module ->
-        {:ok, assign(socket, plugin_module: module, plugin: plugin, plugin_name: plugin_name)}
+        {:ok, assign(socket,
+                     plugin_module: module,
+                     plugin: plugin,
+                     plugin_key: plugin_key)}
     end
   end
 
@@ -23,7 +26,7 @@ defmodule DashboardWeb.DynamicPluginLive do
 
     <!-- Render the plugin's LiveView -->
     <div id="plugin-container" class="p-4">
-      <%= live_render(@socket, @plugin_module.module, id: @plugin_name) %>
+      <%= live_render(@socket, @plugin_module.module, id: @plugin_key) %>
     </div>
 
     <!-- Dynamically load plugin JS -->
