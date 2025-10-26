@@ -5,6 +5,8 @@ defmodule Dashboard.Application do
 
   use Application
 
+  alias Dashboard.{PluginLoader, PluginConfig}
+
   @impl true
   def start(_type, _args) do
     children = [
@@ -22,7 +24,26 @@ defmodule Dashboard.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Dashboard.Supervisor]
-    Supervisor.start_link(children, opts)
+    {:ok, sup} = Supervisor.start_link(children, opts)
+
+    {:ok, configs} = PluginConfig.load_configs()
+    for %{"name" => name,
+          "atom" => _atom,
+          "module" => _cmodule,
+          "liveView" => _liveView,
+          "enabled" => enabled,
+          "type" => _type} <- configs do
+      if enabled == true do
+        case PluginLoader.load_plugin(name) do
+          {:ok, pid} ->
+            IO.inspect("[+] Loaded plugin #{name} with pid: #{inspect(pid)} . . .")
+          {:error, reason} ->
+            IO.inspect("[-] Failed to load plugin #{name}: #{reason} . . .")
+        end
+      end
+    end
+
+    {:ok, sup}
   end
 
   # Tell Phoenix to update the endpoint configuration

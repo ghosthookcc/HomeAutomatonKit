@@ -26,6 +26,8 @@ defmodule DashboardWeb.Endpoint do
     gzip: not code_reloading?,
     only: DashboardWeb.static_paths()
 
+  plug DashboardWeb.PluginStaticPlug
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
@@ -50,5 +52,5 @@ defmodule DashboardWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug DashboardWeb.Router
+  plug DashboardWeb.Router 
 end

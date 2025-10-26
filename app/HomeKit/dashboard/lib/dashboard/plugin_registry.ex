@@ -5,13 +5,20 @@ defmodule Dashboard.PluginRegistry do
     Agent.start_link(fn -> %{} end, name: __MODULE__)
   end
 
-  def add(name, module, path, pid \\ nil) do
-    Agent.update(__MODULE__, &Map.put(&1, name, %{module: module, path: path, pid: pid}))
+  def register(name, module, path, pid \\ nil, opts \\ []) do
+    endpoint = Keyword.get(opts, :endpoint)
+    static_path = Path.join(path, "priv/static/assets")
+    Agent.update(__MODULE__, &Map.put(&1, name,
+                              %{module: module,
+                                path: path,
+                                static_path: static_path,
+                                pid: pid,
+                                endpoint: endpoint}))
   end
 
-  def remove(name) do
+  def unregister(name) do
     Agent.update(__MODULE__, &Map.delete(&1, name))
-  end 
+  end
 
   def get(name), do: Agent.get(__MODULE__, &Map.get(&1, name))
   def list(), do: Agent.get(__MODULE__, & &1)

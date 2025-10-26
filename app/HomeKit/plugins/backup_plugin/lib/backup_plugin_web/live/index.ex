@@ -1,6 +1,7 @@
 defmodule BackupPluginWeb.Index do
   # https://fly.io/phoenix-files/phoenix-liveview-zipped-uploads/
-  use BackupPluginWeb, :live_view
+  #use BackupPluginWeb, :live_view
+  use Phoenix.LiveView
 
   alias BackupPluginWeb.Components.Table, as: Mishka
 
@@ -44,7 +45,7 @@ defmodule BackupPluginWeb.Index do
         File.mkdir_p!(Path.dirname(destination))
         File.cp!(meta.path, destination)
 
-        {:ok, ~p"/uploads/#{Path.basename(destination)}"}
+        #upload_path = "/uploads/#{Path.basename(destination)}"
       end)
     {:noreply, 
       socket 
@@ -57,10 +58,10 @@ defmodule BackupPluginWeb.Index do
   #
   #    [{destination, _paths}] = 
   #       consume_uploaded_entries(socket, :uploader, fn %{path: path}, _entry ->
-  #        {:ok, [{:zip_comment, []}, {:zip_file, first, _, _, _, _} | _]} = :zip.list_dir(~c"#{path}")
+  #        {:ok, [{:zip_comment, []}, {:zip_file, first, _, _, _, _} | _]} = :zip.list_dir("#{path}")
   #
   #          destination_path = Path.join(@upload_dir, Path.basename(to_string(first)))
-  #        {:ok, paths} = :zip.unzip(~c"#{path}", cwd: ~c"#{@upload_dir}")
+  #        {:ok, paths} = :zip.unzip("#{path}", cwd: "#{@upload_dir}")
   #        {:ok, {destination_path, paths}}
   #      end)
   #    {:noreply, assign(socket, status: "[+] \"#{Path.basename(destination)}\" uploaded . . .")}

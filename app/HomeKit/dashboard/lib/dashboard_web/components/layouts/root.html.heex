@@ -25,12 +25,22 @@
           setTheme(localStorage.getItem("phx:theme") || "system");
         }
         window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
-        
         window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
       })();
     </script>
   </head>
   <body>
+    <%= if Phoenix.Flash.get(@flash, :info) do %>
+      <div phx-flash class="bg-blue-100 border border-blue-300 text-blue-700 px-4 py-2 rounded mb-2">
+        <%= Phoenix.Flash.get(@flash, :info) %>
+      </div>
+    <% end %>
+    <%= if Phoenix.Flash.get(@flash, :error) do %>
+      <div phx-flash class="bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded mb-2">
+        <%= Phoenix.Flash.get(@flash, :error) %>
+      </div>
+    <% end %>
+
     {@inner_content}
   </body>
 </html>

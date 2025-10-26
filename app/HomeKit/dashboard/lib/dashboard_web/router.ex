@@ -19,7 +19,11 @@ defmodule DashboardWeb.Router do
     pipe_through :browser
 
     live "/", Index, :index
-    live "/plugins/:plugin", PluginRouter, :index
+
+    get "/plugins", RedirectController, :plugin_not_found
+
+    live "/plugins/:plugin", DynamicPluginLive, :show
+    live "/plugins/:plugin/*path", DynamicPluginLive, :show
   end
 
   # Other scopes may use custom stacks.

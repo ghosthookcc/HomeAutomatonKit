@@ -16,20 +16,33 @@
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html";
 
-// Establish Phoenix Socket and LiveView configuration.
-import { Socket } from "phoenix";
-import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
 import MishkaComponents from "../vendor/mishka_components.js";
 import DropzoneHooks from "./hooks/dropzone.js";
-console.log(DropzoneHooks);
+
 const Hooks = {
   Dropzone: DropzoneHooks.Dropzone,
   DropzoneZipped: DropzoneHooks.DropzoneZipped,
   ...DropzoneHooks,
   ...MishkaComponents,
 };
+
+const register = () => 
+{
+    if (window.registerPluginHooks) 
+    {
+        window.registerPluginHooks(Hooks);
+        console.log("[+][Backup Plugin] Hooks registered successfully . . .");
+    }
+    else 
+    {
+        console.warn("[/][Backup Plugin] Not ready yet, retrying...");
+        setTimeout(register, 300);
+    }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
+  /*
   let csrfToken = document
     .querySelector("meta[name='csrf-token']")
     .getAttribute("content");
@@ -53,6 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
   liveSocket.connect();
   liveSocket.enableDebug();
   window.liveSocket = liveSocket;
+  */
+    register();
 });
 topbar.config({
   barColors: {
@@ -62,6 +77,7 @@ topbar.config({
 });
 window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
 window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide()); // connect if there are any LiveViews on the page
+
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session

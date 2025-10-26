@@ -1,0 +1,10 @@
+[
+  {
+    "atom": "backup",
+    "enabled": false,
+    "liveView": "BackupPluginWeb.Index",
+    "module": "BackupPlugin",
+    "name": "backup_plugin",
+    "type": "Process"
+  }
+]

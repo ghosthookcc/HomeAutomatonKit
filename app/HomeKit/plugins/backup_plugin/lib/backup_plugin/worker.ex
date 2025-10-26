@@ -8,8 +8,8 @@ defmodule BackupPlugin.Worker do
   def init(:ok), do: {:ok, %{}}
 
   def perform_backup do
-    IO.puts("Backup running...")
+    IO.inspect("[/] Backup running...")
     :timer.sleep(2000)
-    IO.puts("Backup finished!")
+    IO.inspect("[+] Backup finished . . .")
   end
 end
