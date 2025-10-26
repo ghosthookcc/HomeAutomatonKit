@@ -22,7 +22,7 @@ defmodule DashboardWeb.DynamicPluginLive do
   def render(assigns) do
     ~H"""
     <!-- Dynamically load plugin CSS -->
-    <link rel="stylesheet" href={"/plugins/#{@plugin_name}/assets/css/app.css"} />
+    <link rel="stylesheet" href={"/plugins/#{@plugin_key}/assets/css/app.css"} />
 
     <!-- Render the plugin's LiveView -->
     <div id="plugin-container" class="p-4">
@@ -30,7 +30,7 @@ defmodule DashboardWeb.DynamicPluginLive do
     </div>
 
     <!-- Dynamically load plugin JS -->
-    <script defer type="text/javascript" src={"/plugins/#{@plugin_name}/assets/js/app.js"}></script>
+    <script defer type="text/javascript" src={"/plugins/#{@plugin_key}/assets/js/app.js"}></script>
     """
   end
 end
