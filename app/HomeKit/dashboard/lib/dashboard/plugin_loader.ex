@@ -14,6 +14,8 @@ defmodule Dashboard.PluginLoader do
     {:ok, configs} = PluginConfig.load_configs()
     config = Enum.find(configs, &(&1["name"] == name))
 
+    PluginConfig.update_config(config["atom"], true)
+
     type = config["type"]
     case type do
       "Process" ->
@@ -28,7 +30,6 @@ defmodule Dashboard.PluginLoader do
             {:error, reason} ->
               {:error, reason}
           end
-          IO.inspect(pid)
 
           liveview = 
             if config["liveView"] do

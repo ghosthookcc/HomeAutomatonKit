@@ -1,7 +1,7 @@
 [
   {
     "atom": "backup",
-    "enabled": false,
+    "enabled": true,
     "liveView": "BackupPluginWeb.Index",
     "module": "BackupPlugin",
     "name": "backup_plugin",
