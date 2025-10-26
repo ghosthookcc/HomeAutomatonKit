@@ -1,6 +1,5 @@
+# Inspiration: https://fly.io/phoenix-files/phoenix-liveview-zipped-uploads/
 defmodule BackupPluginWeb.Index do
-  # https://fly.io/phoenix-files/phoenix-liveview-zipped-uploads/
-  #use BackupPluginWeb, :live_view
   use Phoenix.LiveView
 
   alias BackupPluginWeb.Components.Table, as: Mishka
@@ -37,9 +36,6 @@ defmodule BackupPluginWeb.Index do
   def handle_event("save", _params, socket) do
     uploaded_entries = 
       consume_uploaded_entries(socket, :uploader, fn meta, entry ->
-        IO.inspect(meta)
-        IO.inspect(entry)
-
         destination = Path.join([@upload_dir, entry.client_relative_path || entry.client_name])
 
         File.mkdir_p!(Path.dirname(destination))
@@ -51,25 +47,7 @@ defmodule BackupPluginWeb.Index do
     {:noreply, 
       socket 
       |> update(:uploaded_entries, &(&1 ++ uploaded_entries))}
-  end
-
-  #def handle_progress(:uploader, entry, socket) do 
-  #  if entry.done? do
-  #    File.mkdir_p!(@upload_dir)
-  #
-  #    [{destination, _paths}] = 
-  #       consume_uploaded_entries(socket, :uploader, fn %{path: path}, _entry ->
-  #        {:ok, [{:zip_comment, []}, {:zip_file, first, _, _, _, _} | _]} = :zip.list_dir("#{path}")
-  #
-  #          destination_path = Path.join(@upload_dir, Path.basename(to_string(first)))
-  #        {:ok, paths} = :zip.unzip("#{path}", cwd: "#{@upload_dir}")
-  #        {:ok, {destination_path, paths}}
-  #      end)
-  #    {:noreply, assign(socket, status: "[+] \"#{Path.basename(destination)}\" uploaded . . .")}
-  #  else
-  #    {:noreply, assign(socket, status: "[/] Uploading . . .")}
-  #  end
-  #end
+  end 
 
   defp error_to_string(:too_large), do: "Too large"
   defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"

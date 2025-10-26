@@ -20,11 +20,6 @@ defmodule BackupPluginWeb.Router do
     live "/", Index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", BackupPluginWeb do
-  #   pipe_through :api
-  # end
-
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:backup_plugin, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
