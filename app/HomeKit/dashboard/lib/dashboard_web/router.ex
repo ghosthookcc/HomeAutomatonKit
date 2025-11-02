@@ -11,6 +11,13 @@ defmodule DashboardWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :plugin_assets do
+    plug :accepts, ["js", "css"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :put_secure_browser_headers
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -21,9 +28,12 @@ defmodule DashboardWeb.Router do
     live "/", Index, :index
 
     get "/plugins", RedirectController, :plugin_not_found
+  end
 
-    live "/plugins/:plugin", DynamicPluginLive, :show
-    live "/plugins/:plugin/*path", DynamicPluginLive, :show
+  scope "/", DashboardWeb do
+    pipe_through :plugin_assets
+
+    get "/plugins/:plugin/*path", PluginAssetPlug, []
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

@@ -1,0 +1,58 @@
+<div class="flex">
+      <%= if @mode == :menu do %>
+        <!-- Plugin menu -->
+        <aside class="w-64 border-r border-gray-200 p-3">
+          <h2 class="font-bold mb-2">Plugins</h2>
+          <ul class="space-y-2">
+            <%= for {name, plugin} <- @plugins do %>
+              <li>
+                <button
+                  phx-click="load_plugin"
+                  phx-value-name={plugin["name"]}
+                  class="px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left">
+                  {name}
+                </button>
+              </li>
+            <% end %>
+          </ul>
+        </aside>
+
+        <div class="flex-1 p-4">
+          <p>Select a plugin from the menu.</p>
+        </div>
+
+      <% else %>
+        <!-- Plugin loaded via DynamicPluginLive -->
+        <div class="flex-1 p-4">
+          <button
+            phx-click="back_to_menu"
+            class="mb-4 px-3 py-1 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600">
+            ← Back to Plugins
+          </button>
+          <%= live_render(@socket, DynamicPluginLive, id: @plugin_key, session: %{"plugin_name" => @plugin_name, "plugin" => @plugin_key}) %>
+        </div>
+      <% end %>
+    </div>
+
+<!--
+<div class="space-y-4 p-5">
+  <h2 class="text-xl font-bold">Plugins</h2>
+  <ul class="space-y-2">
+  <%= for {name, plugin} <- @plugins do %>
+    <li class="grid items-center justify-between p-2 border rounded">
+      <span>[<%= plugin["type"] %>,Loaded=<%= plugin[:enabled] %>] <%= plugin["atom"] %></span>
+      <div class="space-x-2">
+        <button
+          phx-click={if plugin[:enabled], do: "unload_plugin", else: "load_plugin"}
+          phx-value-name={plugin["atom"]}
+          class={
+            "px-3 py-1 rounded text-white " <>
+            if plugin[:enabled], do: "bg-red-500 hover:bg-red-600", else: "bg-green-500 hover:bg-green-600"}>
+          <%= if plugin[:enabled], do: "Unload", else: "Load" %>
+        </button>
+      </div>
+    </li>
+  <% end %>
+  </ul>
+</div>
+-->

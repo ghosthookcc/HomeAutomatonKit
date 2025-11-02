@@ -82,10 +82,10 @@ defmodule BackupPlugin.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["compile", "tailwind backup_plugin", "esbuild backup_plugin"],
+      "assets.build": ["compile", "tailwind app", "esbuild app"],
       "assets.deploy": [
-        "tailwind backup_plugin --minify",
-        "esbuild backup_plugin --minify",
+        "tailwind app --minify",
+        "esbuild app --minify",
         "phx.digest"
       ],
       precommit: ["compile --warning-as-errors", "deps.unlock --unused", "format", "test"]
