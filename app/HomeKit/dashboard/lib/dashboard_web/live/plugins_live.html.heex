@@ -1,26 +1,82 @@
 <div class="flex">
       <%= if @mode == :menu do %>
-        <!-- Plugin menu -->
-        <aside class="w-64 border-r border-gray-200 p-3">
-          <h2 class="font-bold mb-2">Plugins</h2>
-          <ul class="space-y-2">
-            <%= for {name, plugin} <- @plugins do %>
-              <li>
-                <button
-                  phx-click="load_plugin"
-                  phx-value-name={plugin["name"]}
-                  class="px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left">
-                  {name}
-                </button>
-              </li>
-            <% end %>
-          </ul>
-        </aside>
+      <!-- Plugin Sidebar -->
+      <aside class="w-72 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+        <h2 class="text-lg font-semibold mb-4 flex items-center justify-between">
+        <span>🧩 Plugins</span>
+        <button
+          phx-click="refresh_plugins"
+          class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+        Refresh
+        </button>
+  </h2>
 
-        <div class="flex-1 p-4">
-          <p>Select a plugin from the menu.</p>
+  <ul class="space-y-3">
+    <%= for {name, plugin} <- @plugins do %>
+      <li
+        class={[
+          "rounded-lg border p-3 flex flex-col gap-2 transition",
+          plugin[:enabled] && "border-blue-400 bg-blue-50 dark:bg-blue-950",
+          !plugin[:enabled] && "border-gray-200 dark:border-gray-700",
+        ]}
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-medium text-gray-900 dark:text-gray-100">
+              {plugin["atom"]}
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              v{plugin["version"] || "1.0.0"}
+            </p>
+          </div>
+
+          <!-- Toggle Enable/Disable -->
+          <label class="inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              phx-click="toggle_plugin"
+              phx-value-name={plugin["name"]}
+              checked={plugin[:enabled]}
+              class="sr-only peer"
+            />
+            <div class="pointer-events-none w-10 h-5 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:bg-blue-600 transition"></div>
+            <span class="ml-2 text-xs text-gray-600 dark:text-gray-400">
+              <%= if plugin[:enabled], do: "On", else: "Off" %>
+            </span>
+          </label>
         </div>
 
+        <!-- Description -->
+        <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+          <%= plugin["description"] || "No description provided." %>
+        </p>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 pt-1">
+          <button
+            phx-click="load_plugin_ui"
+            phx-value-name={plugin["name"]}
+            class="text-xs px-3 py-1 rounded bg-green-600 hover:bg-blue-700 text-white">
+          Test UI
+          </button>
+          <button
+            phx-click="load_plugin"
+            phx-value-name={plugin["name"]}
+            class="text-xs px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white">
+            Load
+          </button>
+
+          <button
+            phx-click="unload_plugin"
+            phx-value-name={plugin["name"]}
+            class="text-xs px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200">
+            Unload
+          </button>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+</aside>
       <% else %>
         <!-- Plugin loaded via DynamicPluginLive -->
         <div class="flex-1 p-4">

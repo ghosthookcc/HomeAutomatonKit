@@ -21,6 +21,12 @@ defmodule DashboardWeb.PluginsLive do
     {:noreply, assign(socket, mode: :menu, plugin_name: nil, plugin_key: nil)}
   end
 
+  def handle_event("load_plugin_ui", _, socket) do
+     {:noreply,
+      socket
+      |> assign(mode: :plugin)}
+  end
+
   def handle_event("load_plugin", params, socket) do
     plugin_name =
       cond do
@@ -39,7 +45,7 @@ defmodule DashboardWeb.PluginsLive do
     {:noreply,
       socket 
       |> push_event("load_plugin", %{plugin: plugin_name})
-      |> assign(mode: :plugin, plugins: plugins, plugin_name: plugin_name, plugin_key: Atom.to_string(atom))}
+      |> assign(mode: :menu, plugins: plugins, plugin_name: plugin_name, plugin_key: Atom.to_string(atom))}
   end
 
   def handle_event("unload_plugin", %{"name" => plugin_name} = _params, socket) do
