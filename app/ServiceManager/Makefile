@@ -1,15 +1,25 @@
 PROTO_VERSION = 33.1
 
 PROTO_DIR=proto
+IGNORE_DIR := include # relative to PROTO_DIR
 
 PROTO_URL_WIN = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-win64.zip
 PROTO_URL_LINUX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-linux-x86_64.zip
 PROTO_URL_OSX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-osx-x86_64.zip
 
 OUT_DIR=proto-stubs
+LANGUAGE ?= go
 
-PROTO_FILES=$(PROTO_DIR)/*.proto
+OUT_IMPL_DIR := $(OUT_DIR)/impl/$(LANGUAGE)
 
+ifeq ($(OS),Windows_NT)
+PROTO_FILES := $(shell powershell -NoProfile -Command \
+	"Get-ChildItem '$(PROTO_DIR)' -Recurse -Filter '*.proto' | " \
+	"Where-Object { ($$_.FullName -replace '\\\\','/') -notmatch '\\include\\' } | " \
+	"ForEach-Object { ($$_.FullName -replace '\\\\','/').Substring($$PWD.Path.Length + 1) }")
+else
+	PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto' ! -path '$(PROTO_DIR)/include/*' -printf '%P\n')
+endif
 PROTOC=protoc
 
 all: install proto
@@ -17,20 +27,38 @@ all: install proto
 proto:
 	@echo "==> Generating Go gRPC code..."
 ifeq ($(OS),Windows_NT)
-	if not exist $(OUT_DIR) mkdir $(OUT_DIR)
+	powershell -Command "New-Item -ItemType Directory -Path '$(OUT_IMPL_DIR)' -Force"
 else
-	mkdir -p $(OUT_DIR)
+	mkdir -p $(OUT_IMPL_DIR)
 endif
-	$(PROTOC) \
-		-I$(PROTO_DIR) \
-		-I$(PROTO_DIR)/include \
-		--go_out=$(OUT_DIR) --go_opt=paths=source_relative \
-		--go-grpc_out=$(OUT_DIR) --go-grpc_opt=paths=source_relative \
-		$(PROTO_DIR)/*.proto
+ifeq ($(LANGUAGE),go)
+	protoc -I$(PROTO_DIR) \
+		   -I$(PROTO_DIR)/include \
+	       --go_out=$(OUT_IMPL_DIR) --go_opt=paths=source_relative \
+	       --go-grpc_out=$(OUT_IMPL_DIR) --go-grpc_opt=paths=source_relative \
+	       $(PROTO_FILES)
+endif
+ifeq ($(LANGUAGE),python)
+	protoc -I$(PROTO_DIR) \
+		   -I$(PROTO_DIR)/include \
+	       --python_out=$(OUT_IMPL_DIR) \
+	       $(PROTO_FILES)
+endif
+ifeq ($(LANGUAGE),java)
+	protoc -I$(PROTO_DIR) \
+		   -I$(PROTO_DIR)/include \
+	       --java_out=$(OUT_IMPL_DIR) \
+	       $(PROTO_FILES)
+endif
 
 install:
+ifeq ($(LANGUAGE),go)
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+endif
+ifeq ($(LANGUAGE),python)
+	pip install grpcio-tools
+endif
 ifeq ($(OS),Windows_NT)
 	@echo "==> Downloading protoc $(PROTO_VERSION) for Windows..."
 	if not exist $(OUT_DIR) mkdir $(OUT_DIR)

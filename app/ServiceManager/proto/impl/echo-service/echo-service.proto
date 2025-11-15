@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package echo;
+
+option go_package = "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/proto-stubs/impl/echo-service";
+
+import "common/service.proto";
+
+message Message {
+	string data = 1;
+}
