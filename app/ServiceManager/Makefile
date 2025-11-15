@@ -8,18 +8,21 @@ PROTO_URL_LINUX = https://github.com/protocolbuffers/protobuf/releases/download/
 PROTO_URL_OSX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-osx-x86_64.zip
 
 OUT_DIR=proto-stubs
-LANGUAGE ?= go
+MODULE ?= go
 
-OUT_IMPL_DIR := $(OUT_DIR)/impl/$(LANGUAGE)
+OUT_IMPL_DIR := $(OUT_DIR)/impl/$(MODULE)
 
 ifeq ($(OS),Windows_NT)
 PROTO_FILES := $(shell powershell -NoProfile -Command \
 	"Get-ChildItem '$(PROTO_DIR)' -Recurse -Filter '*.proto' | " \
 	"Where-Object { ($$_.FullName -replace '\\\\','/') -notmatch '\\include\\' } | " \
 	"ForEach-Object { ($$_.FullName -replace '\\\\','/').Substring($$PWD.Path.Length + 1) }")
+NANOPB_PLUGIN := $(shell python -c "import nanopb.generator; import os; print(os.path.join(os.path.dirname(nanopb.generator.__file__), 'protoc-gen-nanopb.bat'))")
 else
-	PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto' ! -path '$(PROTO_DIR)/include/*' -printf '%P\n')
+PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto' ! -path '$(PROTO_DIR)/include/*' -printf '%P\n')
+NANOPB_PLUGIN := $(shell python -c "import nanopb.generator; import os; print(os.path.join(os.path.dirname(nanopb.generator.__file__), 'protoc-gen-nanopb'))")
 endif
+
 PROTOC=protoc
 
 all: install proto
@@ -31,33 +34,40 @@ ifeq ($(OS),Windows_NT)
 else
 	mkdir -p $(OUT_IMPL_DIR)
 endif
-ifeq ($(LANGUAGE),go)
+ifeq ($(MODULE),go)
 	protoc -I$(PROTO_DIR) \
 		   -I$(PROTO_DIR)/include \
 	       --go_out=$(OUT_IMPL_DIR) --go_opt=paths=source_relative \
 	       --go-grpc_out=$(OUT_IMPL_DIR) --go-grpc_opt=paths=source_relative \
 	       $(PROTO_FILES)
 endif
-ifeq ($(LANGUAGE),python)
+ifeq ($(MODULE),python)
 	protoc -I$(PROTO_DIR) \
 		   -I$(PROTO_DIR)/include \
 	       --python_out=$(OUT_IMPL_DIR) \
 	       $(PROTO_FILES)
 endif
-ifeq ($(LANGUAGE),java)
+ifeq ($(MODULE),java)
 	protoc -I$(PROTO_DIR) \
 		   -I$(PROTO_DIR)/include \
 	       --java_out=$(OUT_IMPL_DIR) \
 	       $(PROTO_FILES)
 endif
+ifeq ($(MODULE),esp32)
+	@$(foreach file,$(PROTO_FILES), \
+		echo Generating $(file) && \
+		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \
+	) echo Done
+endif
 
 install:
-ifeq ($(LANGUAGE),go)
+ifeq ($(MODULE),go)
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 endif
-ifeq ($(LANGUAGE),python)
+ifeq ($(MODULE),python)
 	pip install grpcio-tools
+	pip install nanopb
 endif
 ifeq ($(OS),Windows_NT)
 	@echo "==> Downloading protoc $(PROTO_VERSION) for Windows..."
