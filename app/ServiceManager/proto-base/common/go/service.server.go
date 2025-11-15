@@ -26,10 +26,14 @@ type (
     State         = pb.State
     CurrentState  = pb.CurrentState
     ServiceServer = pb.ServiceServer
+
+    GrpcServer = grpc.Server
 )
 
 var (
     NewTimestamp = timestamppb.New
+    
+    RegisterCommonService = pb.RegisterServiceServer
 )
 
 const (
@@ -47,21 +51,21 @@ var (
 )
 
 type ServiceHandler interface {
-    OnConnect(ctx context.Context, reply *pb.BaseReply) error
-    OnDisconnect(ctx context.Context, reply *pb.BaseReply) error
-    OnPropagateLogs(ctx context.Context, reply *pb.BaseReply) error
-    OnGetStatus(ctx context.Context, reply *pb.BaseReply) error
+    OnConnect(context context.Context, reply *pb.BaseReply) error
+    OnDisconnect(context context.Context, reply *pb.BaseReply) error
+    OnPropagateLogs(context context.Context, reply *pb.BaseReply) error
+    OnGetStatus(context context.Context, reply *pb.BaseReply) error
 }
 
 type BaseServiceServer struct {
     pb.UnimplementedServiceServer
-    state   pb.CurrentState
+    state   CurrentState
     handler ServiceHandler
 }
 
 func NewBaseServer() *BaseServiceServer {
     return &BaseServiceServer{
-        state:   pb.CurrentState_ALIVE,
+        state:   State_ALIVE,
         handler: nil,
     }
 }
@@ -70,15 +74,14 @@ func (server *BaseServiceServer) SetHandler(handler ServiceHandler) {
     server.handler = handler
 }
 
-func (server *BaseServiceServer) GetCurrentState() pb.CurrentState {
+func (server *BaseServiceServer) GetCurrentState() CurrentState {
     return server.state
 }
-
-func (server *BaseServiceServer) SetState(state pb.CurrentState) {
+func (server *BaseServiceServer) SetState(state CurrentState) {
     server.state = state
 }
 
-func (server *BaseServiceServer) buildState(id int32) *pb.State {
+func (server *BaseServiceServer) buildState(id int32) *State {
     return &pb.State{
         Descriptor_: &pb.BaseReply{
             Id:          id,
@@ -87,57 +90,57 @@ func (server *BaseServiceServer) buildState(id int32) *pb.State {
         State: server.state,
     }
 }
-
-func (server *BaseServiceServer) GetState(ctx context.Context, reply *pb.BaseReply) (*pb.State, error) {
+func (server *BaseServiceServer) GetBuildState(context context.Context, reply *BaseReply) (*State, error) {
     return server.buildState(reply.GetId()), nil
 }
 
-func (server *BaseServiceServer) Ping(ctx context.Context, _ *emptypb.Empty) (*pb.State, error) {
+
+func (server *BaseServiceServer) Ping(context context.Context, _ *Empty) (*State, error) {
     return server.buildState(0), nil
 }
 
-func (server *BaseServiceServer) Connect(ctx context.Context, reply *pb.BaseReply) (*pb.State, error) {
+func (server *BaseServiceServer) Connect(context context.Context, reply *BaseReply) (*State, error) {
     if server.handler != nil {
-        if errno := server.handler.OnConnect(ctx, reply); errno != nil {
+        if errno := server.handler.OnConnect(context, reply); errno != nil {
             return nil, errno
         }
     }
     
-    server.state = pb.CurrentState_CONNECTING
+    server.state = State_CONNECTING
     return server.buildState(reply.GetId()), nil
 }
 
-func (server *BaseServiceServer) Disconnect(ctx context.Context, reply *pb.BaseReply) (*pb.State, error) {
+func (server *BaseServiceServer) Disconnect(context context.Context, reply *BaseReply) (*State, error) {
     if server.handler != nil {
-        if errno := server.handler.OnDisconnect(ctx, reply); errno != nil {
+        if errno := server.handler.OnDisconnect(context, reply); errno != nil {
             return nil, errno
         }
     }
     
-    server.state = pb.CurrentState_DISCONNECTING
+    server.state = State_DISCONNECTING
     return server.buildState(reply.GetId()), nil
 }
 
-func (server *BaseServiceServer) PropagateCachedLogs(ctx context.Context, reply *pb.BaseReply) (*emptypb.Empty, error) {
+func (server *BaseServiceServer) PropagateCachedLogs(context context.Context, reply *BaseReply) (*Empty, error) {
     if server.handler != nil {
-        if errno := server.handler.OnPropagateLogs(ctx, reply); errno != nil {
+        if errno := server.handler.OnPropagateLogs(context, reply); errno != nil {
             return nil, errno
         }
     }
     
     fmt.Println("[+] Propagating logs for ID:", reply.GetId(), ". . .")
-    return &emptypb.Empty{}, nil
+    return &Empty{}, nil
 }
 
-func (server *BaseServiceServer) GetCurrentStatus(ctx context.Context, reply *pb.BaseReply) (*emptypb.Empty, error) {
+func (server *BaseServiceServer) GetCurrentStatus(context context.Context, reply *BaseReply) (*Empty, error) {
     if server.handler != nil {
-        if errno := server.handler.OnGetStatus(ctx, reply); errno != nil {
+        if errno := server.handler.OnGetStatus(context, reply); errno != nil {
             return nil, errno
         }
     }
     
     fmt.Printf("[/] Current status requested for ID %d → %v . . .\n", reply.GetId(), server.state)
-    return &emptypb.Empty{}, nil
+    return &Empty{}, nil
 }
 
 func RunServer(service pb.ServiceServer) error {
@@ -149,6 +152,23 @@ func RunServer(service pb.ServiceServer) error {
 
     grpcServer := grpc.NewServer()
     pb.RegisterServiceServer(grpcServer, service)
+    fmt.Printf("[+] Server running on port %d . . .\n", *port)
+    
+    if errno := grpcServer.Serve(listener); errno != nil {
+        return fmt.Errorf("[-] Failed to serve: %v . . .", errno)
+    }
+    return nil
+}
+
+func RunServerWithRegistration(registerFunc func(*grpc.Server)) error {
+    flag.Parse()
+    listener, errno := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+    if errno != nil {
+        return fmt.Errorf("[-] Failed to listen: %v . . .", errno)
+    }
+
+    grpcServer := grpc.NewServer()
+    registerFunc(grpcServer)
     fmt.Printf("[+] Server running on port %d . . .\n", *port)
     
     if errno := grpcServer.Serve(listener); errno != nil {
