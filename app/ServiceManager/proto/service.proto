@@ -1,7 +1,7 @@
 syntax = "proto3";
 package ServicePackage;
 
-option go_package = "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/serviceManagerProject";
+option go_package = "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/stub";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
