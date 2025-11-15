@@ -1,23 +1,22 @@
 syntax = "proto3";
 package ServicePackage;
 
-option go_package = "../servicemanager";
+option go_package = "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/serviceManagerProject";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 service Service 
 {
-    rpc getState (baseReply) returns (State);
-
-    rpc isAlive (baseReply) returns (State);
-    rpc connect (baseReply) returns (State);
-    rpc disconnect (baseReply) returns (State);
-    rpc propagateCachedLogs (baseReply) returns (google.protobuf.Empty);
-    rpc getCurrentStatus (baseReply) returns (google.protobuf.Empty);
+    rpc Ping (google.protobuf.Empty) returns (State);
+    rpc Connect (BaseReply) returns (State);
+    rpc Disconnect (BaseReply) returns (State);
+    rpc PropagateCachedLogs (BaseReply) returns (google.protobuf.Empty);
+    rpc GetCurrentStatus (BaseReply) returns (google.protobuf.Empty);
+    rpc GetState (BaseReply) returns (State);
 }
 
-enum currentState 
+enum CurrentState 
 {
     ALIVE = 0;
     DEAD = 1;
@@ -29,11 +28,11 @@ enum currentState
 
 message State 
 {
-    baseReply descriptor = 1;
-    currentState state = 2;
+    BaseReply descriptor = 1;
+    CurrentState state = 2;
 }
 
-message baseReply 
+message BaseReply 
 {
     int32 id = 1;
     google.protobuf.Timestamp lastUpdated = 2;
