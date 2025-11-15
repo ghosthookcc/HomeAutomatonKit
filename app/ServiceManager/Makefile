@@ -7,7 +7,7 @@ PROTO_URL_WIN = https://github.com/protocolbuffers/protobuf/releases/download/v$
 PROTO_URL_LINUX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-linux-x86_64.zip
 PROTO_URL_OSX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-osx-x86_64.zip
 
-OUT_DIR=proto-stubs
+OUT_DIR=proto-stubs/impl
 MODULE ?= go
 
 OUT_IMPL_DIR := $(OUT_DIR)/impl/$(MODULE)
@@ -25,40 +25,7 @@ endif
 
 PROTOC=protoc
 
-all: install proto
-
-proto:
-	@echo "==> Generating Go gRPC code..."
-ifeq ($(OS),Windows_NT)
-	powershell -Command "New-Item -ItemType Directory -Path '$(OUT_IMPL_DIR)' -Force"
-else
-	mkdir -p $(OUT_IMPL_DIR)
-endif
-ifeq ($(MODULE),go)
-	protoc -I$(PROTO_DIR) \
-		   -I$(PROTO_DIR)/include \
-	       --go_out=$(OUT_IMPL_DIR) --go_opt=paths=source_relative \
-	       --go-grpc_out=$(OUT_IMPL_DIR) --go-grpc_opt=paths=source_relative \
-	       $(PROTO_FILES)
-endif
-ifeq ($(MODULE),python)
-	protoc -I$(PROTO_DIR) \
-		   -I$(PROTO_DIR)/include \
-	       --python_out=$(OUT_IMPL_DIR) \
-	       $(PROTO_FILES)
-endif
-ifeq ($(MODULE),java)
-	protoc -I$(PROTO_DIR) \
-		   -I$(PROTO_DIR)/include \
-	       --java_out=$(OUT_IMPL_DIR) \
-	       $(PROTO_FILES)
-endif
-ifeq ($(MODULE),esp32)
-	@$(foreach file,$(PROTO_FILES), \
-		echo Generating $(file) && \
-		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \
-	) echo Done
-endif
+all: install setup proto
 
 install:
 ifeq ($(MODULE),go)
@@ -91,5 +58,45 @@ else
 	rm $(PROTO_DIR)/protoc.zip
 endif
 
+setup:
+	@echo "==> Setting up workspace . . ."
+ifeq ($(OS),Windows_NT)
+	powershell -Command "New-Item -ItemType Directory -Path '$(OUT_DIR)' -Force"
+else
+	mkdir -p $(OUT_DIR)
+endif
 
-.PHONY: all install proto
+proto:
+	@echo "==> Generating '$(MODULE)' gRPC code . . ."
+ifeq ($(OS),Windows_NT)
+	powershell -Command "New-Item -ItemType Directory -Path '$(OUT_IMPL_DIR)' -Force"
+else
+	mkdir -p $(OUT_IMPL_DIR)
+endif
+ifeq ($(MODULE),go)
+	protoc -I$(PROTO_DIR) \
+		   -I$(PROTO_DIR)/include \
+	       --go_out=$(OUT_IMPL_DIR) --go_opt=paths=source_relative \
+	       --go-grpc_out=$(OUT_IMPL_DIR) --go-grpc_opt=paths=source_relative \
+	       $(PROTO_FILES)
+endif
+ifeq ($(MODULE),python)
+	protoc -I$(PROTO_DIR) \
+		   -I$(PROTO_DIR)/include \
+	       --python_out=$(OUT_IMPL_DIR) \
+	       $(PROTO_FILES)
+endif
+ifeq ($(MODULE),java)
+	protoc -I$(PROTO_DIR) \
+		   -I$(PROTO_DIR)/include \
+	       --java_out=$(OUT_IMPL_DIR) \
+	       $(PROTO_FILES)
+endif
+ifeq ($(MODULE),esp32)
+	@$(foreach file,$(PROTO_FILES), \
+		echo Generating $(file) && \
+		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \
+	) echo Done
+endif
+
+.PHONY: all install setup proto
