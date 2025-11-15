@@ -5,3 +5,5 @@
 
 **/proto-stubs/impl/*
 !**/proto-stubs/impl/README.md
+
+**/secrets.h
