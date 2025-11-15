@@ -11,7 +11,7 @@ import ("fmt"
         "google.golang.org/protobuf/types/known/emptypb"
         "google.golang.org/protobuf/types/known/timestamppb"
 
-        pb "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/proto-stubs")
+        pb "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/proto-stubs/impl/go/common")
 
 var (tls        = flag.Bool("tls", false, "Connection uses TLS if true, else plain TCP")
      certFile   = flag.String("cert_file", "", "The TLS cert file")
