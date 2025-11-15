@@ -1,5 +1,5 @@
 **/proto/include
 **/proto/readme.txt
 
-**/proto-stubs/**
-!**/proto-stubs/README.md
+proto-stubs/impl/**
+!proto-stubs/impl/README.md

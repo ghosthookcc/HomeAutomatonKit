@@ -10,7 +10,7 @@ PROTO_URL_OSX = https://github.com/protocolbuffers/protobuf/releases/download/v$
 OUT_DIR=proto-stubs/impl
 MODULE ?= go
 
-OUT_IMPL_DIR := $(OUT_DIR)/impl/$(MODULE)
+OUT_IMPL_DIR := $(OUT_DIR)/$(MODULE)
 
 ifeq ($(OS),Windows_NT)
 PROTO_FILES := $(shell powershell -NoProfile -Command \
