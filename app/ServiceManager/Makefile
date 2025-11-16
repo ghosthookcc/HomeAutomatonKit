@@ -17,6 +17,10 @@ PROTO_FILES := $(shell powershell -NoProfile -Command \
 	"Get-ChildItem '$(PROTO_DIR)' -Recurse -Filter '*.proto' | " \
 	"Where-Object { ($$_.FullName -replace '\\\\','/') -notmatch '\\include\\' } | " \
 	"ForEach-Object { ($$_.FullName -replace '\\\\','/').Substring($$PWD.Path.Length + 1) }")
+INCLUDE_FILES := $(shell powershell -NoProfile -Command \
+	"Get-ChildItem '$(PROTO_DIR)' -Recurse -Filter '*.proto' | " \
+	"Where-Object { ($$_.FullName -replace '\\\\','/') -match '\\include\\' } | " \
+	"ForEach-Object { ($$_.FullName -replace '\\\\','/').Substring($$PWD.Path.Length + 1) }")
 NANOPB_PLUGIN := $(shell python -c "import nanopb.generator; import os; print(os.path.join(os.path.dirname(nanopb.generator.__file__), 'protoc-gen-nanopb.bat'))")
 else
 PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto' ! -path '$(PROTO_DIR)/include/*' -printf '%P\n')
@@ -93,6 +97,10 @@ ifeq ($(MODULE),java)
 	       $(PROTO_FILES)
 endif
 ifeq ($(MODULE),esp32)
+	@$(foreach file,$(INCLUDE_FILES), \
+		echo Generating Include File $(file) && \
+		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \
+	) echo Done
 	@$(foreach file,$(PROTO_FILES), \
 		echo Generating $(file) && \
 		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \

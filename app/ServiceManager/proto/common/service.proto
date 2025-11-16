@@ -8,15 +8,13 @@ import "google/protobuf/timestamp.proto";
 
 service Service 
 {
-    rpc Ping (google.protobuf.Empty) returns (State);
-    rpc Connect (BaseReply) returns (State);
-    rpc Disconnect (BaseReply) returns (State);
-    rpc PropagateCachedLogs (BaseReply) returns (google.protobuf.Empty);
-    rpc GetCurrentStatus (BaseReply) returns (google.protobuf.Empty);
-    rpc GetState (BaseReply) returns (State);
+    rpc Ping (google.protobuf.Empty) returns (BaseHeartbeat);
+    rpc Connect (BaseHeartbeat) returns (BaseState);
+    rpc Disconnect (BaseHeartbeat) returns (BaseState);
+    rpc PropagateCachedLogs (BaseHeartbeat) returns (google.protobuf.Empty);
 }
 
-enum CurrentState 
+enum ConnectionState 
 {
     ALIVE = 0;
     DEAD = 1;
@@ -26,13 +24,13 @@ enum CurrentState
     ERROR = 5;
 }
 
-message State 
+message BaseState
 {
-    BaseReply descriptor = 1;
-    CurrentState state = 2;
+    BaseHeartbeat heartbeat = 1;
+    ConnectionState state = 2;
 }
 
-message BaseReply 
+message BaseHeartbeat
 {
     int32 id = 1;
     google.protobuf.Timestamp lastUpdated = 2;

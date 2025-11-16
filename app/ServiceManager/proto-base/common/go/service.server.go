@@ -13,19 +13,14 @@ import (
     pb "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/proto-stubs/impl/go/common"
 )
 
-import (
-    _ "google.golang.org/protobuf/types/known/emptypb"
-    _ "google.golang.org/protobuf/types/known/timestamppb"
-)
-
 type (
-    Empty     = emptypb.Empty
-    Timestamp = timestamppb.Timestamp
+    Empty            = emptypb.Empty
+    Timestamp        = timestamppb.Timestamp
     
-    BaseReply     = pb.BaseReply
-    State         = pb.State
-    CurrentState  = pb.CurrentState
-    ServiceServer = pb.ServiceServer
+    BaseHeartbeat    = pb.BaseHeartbeat
+    BaseState        = pb.BaseState
+    ConnectionState  = pb.ConnectionState
+    ServiceServer    = pb.ServiceServer
 
     GrpcServer = grpc.Server
 )
@@ -37,9 +32,12 @@ var (
 )
 
 const (
-    State_ALIVE         = pb.CurrentState_ALIVE
-    State_CONNECTING    = pb.CurrentState_CONNECTING
-    State_DISCONNECTING = pb.CurrentState_DISCONNECTING
+    State_ALIVE         = pb.ConnectionState_ALIVE
+    State_DEAD          = pb.ConnectionState_DEAD
+    State_CONNECTING    = pb.ConnectionState_CONNECTING
+    State_DISCONNECTING = pb.ConnectionState_DISCONNECTING
+    State_RECONNECTING  = pb.ConnectionState_RECONNECTING
+    State_ERROR         = pb.ConnectionState_ERROR
 )
 
 var (
@@ -51,15 +49,15 @@ var (
 )
 
 type ServiceHandler interface {
-    OnConnect(context context.Context, reply *pb.BaseReply) error
-    OnDisconnect(context context.Context, reply *pb.BaseReply) error
-    OnPropagateLogs(context context.Context, reply *pb.BaseReply) error
-    OnGetStatus(context context.Context, reply *pb.BaseReply) error
+    OnPing(context context.Context) error
+    OnConnect(context context.Context, heartbeat *pb.BaseHeartbeat) error
+    OnDisconnect(context context.Context, heartbeat *pb.BaseHeartbeat) error
+    OnPropagateLogs(context context.Context, heartbeat *pb.BaseHeartbeat) error
 }
 
 type BaseServiceServer struct {
     pb.UnimplementedServiceServer
-    state   CurrentState
+    state   ConnectionState
     handler ServiceHandler
 }
 
@@ -73,74 +71,74 @@ func NewBaseServer() *BaseServiceServer {
 func (server *BaseServiceServer) SetHandler(handler ServiceHandler) {
     server.handler = handler
 }
-
-func (server *BaseServiceServer) GetCurrentState() CurrentState {
+func (server *BaseServiceServer) GetCurrentState() ConnectionState {
     return server.state
 }
-func (server *BaseServiceServer) SetState(state CurrentState) {
-    server.state = state
-}
 
-func (server *BaseServiceServer) buildState(id int32) *State {
-    return &pb.State{
-        Descriptor_: &pb.BaseReply{
-            Id:          id,
-            LastUpdated: timestamppb.New(time.Now()),
-        },
-        State: server.state,
+func (server *BaseServiceServer) buildState(id int32) *BaseState {
+    heartbeat := &pb.BaseHeartbeat{
+        Id:          id,
+        LastUpdated: timestamppb.New(time.Now()),
+    }
+    
+    return &pb.BaseState{
+        Heartbeat: heartbeat,
+        State:     server.state,
     }
 }
-func (server *BaseServiceServer) GetBuildState(context context.Context, reply *BaseReply) (*State, error) {
-    return server.buildState(reply.GetId()), nil
+
+func (server *BaseServiceServer) BasePing() *BaseHeartbeat {
+    return &pb.BaseHeartbeat{
+        Id:          0,
+        LastUpdated: timestamppb.New(time.Now()),
+    }
 }
-
-
-func (server *BaseServiceServer) Ping(context context.Context, _ *Empty) (*State, error) {
-    return server.buildState(0), nil
-}
-
-func (server *BaseServiceServer) Connect(context context.Context, reply *BaseReply) (*State, error) {
+func (server *BaseServiceServer) Ping(context context.Context, _ *Empty) (*BaseHeartbeat, error) {
     if server.handler != nil {
-        if errno := server.handler.OnConnect(context, reply); errno != nil {
+        if errno := server.handler.OnPing(context); errno != nil {
             return nil, errno
         }
     }
-    
+    return server.BasePing(), nil
+}
+
+func (server *BaseServiceServer) BaseConnect(heartbeat *BaseHeartbeat) *BaseState {
     server.state = State_CONNECTING
-    return server.buildState(reply.GetId()), nil
+    return server.buildState(heartbeat.GetId())
 }
-
-func (server *BaseServiceServer) Disconnect(context context.Context, reply *BaseReply) (*State, error) {
+func (server *BaseServiceServer) Connect(context context.Context, heartbeat *BaseHeartbeat) (*BaseState, error) {
     if server.handler != nil {
-        if errno := server.handler.OnDisconnect(context, reply); errno != nil {
+        if errno := server.handler.OnConnect(context, heartbeat); errno != nil {
             return nil, errno
         }
     }
-    
+    return server.BaseConnect(heartbeat), nil
+}
+
+func (server *BaseServiceServer) BaseDisconnect(heartbeat *BaseHeartbeat) *BaseState {
     server.state = State_DISCONNECTING
-    return server.buildState(reply.GetId()), nil
+    return server.buildState(heartbeat.GetId())
 }
-
-func (server *BaseServiceServer) PropagateCachedLogs(context context.Context, reply *BaseReply) (*Empty, error) {
+func (server *BaseServiceServer) Disconnect(context context.Context, heartbeat *BaseHeartbeat) (*BaseState, error) {
     if server.handler != nil {
-        if errno := server.handler.OnPropagateLogs(context, reply); errno != nil {
+        if errno := server.handler.OnDisconnect(context, heartbeat); errno != nil {
             return nil, errno
         }
     }
-    
-    fmt.Println("[+] Propagating logs for ID:", reply.GetId(), ". . .")
-    return &Empty{}, nil
+    return server.BaseDisconnect(heartbeat), nil
 }
 
-func (server *BaseServiceServer) GetCurrentStatus(context context.Context, reply *BaseReply) (*Empty, error) {
+func (server *BaseServiceServer) BasePropagateCachedLogs(heartbeat *BaseHeartbeat) *Empty {
+    fmt.Println("[+] Propagating logs for ID:", heartbeat.GetId(), ". . .")
+    return &Empty{}
+}
+func (server *BaseServiceServer) PropagateCachedLogs(context context.Context, heartbeat *BaseHeartbeat) (*Empty, error) {
     if server.handler != nil {
-        if errno := server.handler.OnGetStatus(context, reply); errno != nil {
+        if errno := server.handler.OnPropagateLogs(context, heartbeat); errno != nil {
             return nil, errno
         }
     }
-    
-    fmt.Printf("[/] Current status requested for ID %d → %v . . .\n", reply.GetId(), server.state)
-    return &Empty{}, nil
+    return server.BasePropagateCachedLogs(heartbeat), nil
 }
 
 func RunServer(service pb.ServiceServer) error {
