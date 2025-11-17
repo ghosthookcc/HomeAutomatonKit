@@ -25,6 +25,15 @@ NANOPB_PLUGIN := $(shell python -c "import nanopb.generator; import os; print(os
 else
 PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto' ! -path '$(PROTO_DIR)/include/*' -printf '%P\n')
 NANOPB_PLUGIN := $(shell python -c "import nanopb.generator; import os; print(os.path.join(os.path.dirname(nanopb.generator.__file__), 'protoc-gen-nanopb'))")
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	URL := $(PROTO_URL_OSX)
+endif
+ifeq ($(UNAME_S),Darwin)
+	URL := $(PROTO_URL_LINUX)
+endif
+
 endif
 
 PROTOC=protoc
@@ -38,23 +47,15 @@ ifeq ($(MODULE),go)
 endif
 ifeq ($(MODULE),python)
 	pip install grpcio-tools
-	pip install nanopb
 endif
+	@echo "==> Downloading protoc version $(PROTO_VERSION) . . ."
 ifeq ($(OS),Windows_NT)
-	@echo "==> Downloading protoc $(PROTO_VERSION) for Windows..."
 	if not exist $(OUT_DIR) mkdir $(OUT_DIR)
 	powershell -Command "Invoke-WebRequest -Uri '$(PROTO_URL_WIN)' -OutFile '$(PROTO_DIR)/protoc.zip'"
 	powershell -Command "Expand-Archive -Path '$(PROTO_DIR)/protoc.zip' -DestinationPath '$(PROTO_DIR)' -Force"
 	powershell -Command "if (Test-Path '$(PROTO_DIR)/bin') { Remove-Item -Path $(PROTO_DIR)/bin -Recurse -Force }"
 	powershell -Command "Remove-Item -Path '$(PROTO_DIR)/protoc.zip'"
 else
-	UNAME_S := $(shell uname -s)
-	ifeq ($(UNAME_S),Darwin)
-		URL := $(PROTO_URL_OSX)
-	else
-		URL := $(PROTO_URL_LINUX)
-	endif
-	@echo "==> Downloading protoc $(PROTO_VERSION) for $(UNAME_S)..."
 	mkdir -p $(PROTO_DIR)
 	curl -L $(URL) -o $(PROTO_DIR)/protoc.zip
 	unzip -o $(PROTO_DIR)/protoc.zip -d $(PROTO_DIR)

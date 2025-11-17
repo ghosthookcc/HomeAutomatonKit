@@ -1,0 +1,14 @@
+syntax = "proto3";
+package ServiceManagerPackage;
+
+option go_package = "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/proto-stubs/impl/go/service_manager";
+
+import "google/protobuf/empty.proto";
+
+import "common/service.proto";
+
+service ServiceManager
+{
+    rpc Register(ServicePackage.BaseHeartbeat) returns (google.protobuf.Empty);
+    rpc ReportState(ServicePackage.BaseState) returns (google.protobuf.Empty);
+}
