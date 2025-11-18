@@ -8,7 +8,7 @@ import (
 	"io"
 	"log"
 
-	base "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/proto-base/common/go"
+	base "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/proto-stubs/impl/go/service_manager"
 
 	"google.golang.org/protobuf/proto"
 )
