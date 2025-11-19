@@ -1,33 +1,34 @@
-# Load CSV
+library(ggplot2)
+
 data <- read.csv("output.csv", stringsAsFactors = FALSE)
 
-# Convert 'date' column to POSIXct
 data$date <- as.POSIXct(data$date, format="%Y-%m-%d %H:%M:%S")
 
-# Filter only the first 24 hours
-start_time <- min(data$date)
-end_time <- start_time + 24*60*60  # 24 hours later
-data_24h <- subset(data, date >= start_time & date <= end_time)
+days <- 1
+daysInHours <- days*60*60
 
-# Determine min and max humidity, rounded to nearest 5%
-y_min <- floor(min(data_24h$humidity) / 5) * 5
-y_max <- ceiling(max(data_24h$humidity) / 5) * 5
+yMin <- floor(min(data$humidity) / 5) * 5
+yMax <- ceiling(max(data$humidity) / 5) * 5
 
-# Plot line chart, suppress default axes
-plot(data_24h$date, data_24h$humidity,
-     type = "l", lwd = 2, col = "blue",
-     xlab = "Date-Time", ylab = "Humidity (%)",
-     main = "Humidity - First 24 Hours",
-     xaxt = "n", yaxt = "n")  # suppress axes
+timeTicks = 3
+xBreaks = seq(min(data$date), max(data$date), length.out = timeTicks)
 
-# Custom y-axis: every 5%
-axis(2, at = seq(y_min, y_max, by = 10))
+plot <- ggplot(data, aes(x = date, y = humidity)) +
+  geom_line(linewidth = 1, color = "steelblue") +
+  scale_y_continuous(breaks = seq(yMin, yMax, by = 10),
+                     limits = c(yMin, yMax)) +
+  scale_x_datetime(date_labels = "%d-%m %H:%M",
+		   breaks = xBreaks,
+		   expand = expansion(mult = 0)) +
+  labs(
+    title = "Humidity Over Time",
+    x = "Date-Time",
+    y = "Humidity (%)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 
-# Custom x-axis: use actual recorded timestamps (approx. 8-10 ticks)
-num_ticks <- 10
-tick_indices <- round(seq(1, nrow(data_24h), length.out = num_ticks))
-x_ticks <- data_24h$date[tick_indices]
-axis.POSIXct(1, at = x_ticks, format="%d-%m %H:%M")
-
-# Optional: add grid
-grid()
+ggsave("humidity_plot.png", plot = plot, width = 12, height = 6, dpi = 300)
