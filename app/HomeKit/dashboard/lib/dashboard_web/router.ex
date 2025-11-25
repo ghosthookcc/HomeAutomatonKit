@@ -22,6 +22,17 @@ defmodule DashboardWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_or_html do
+    plug :accepts, ["html", "json"]
+  end
+
+  scope "/api/v1", DashboardWeb.Api.V1 do
+    pipe_through :api
+
+    # get "/users/:id", UserController, :show
+    # post "/login", AuthController, :login
+  end
+
   scope "/", DashboardWeb do
     pipe_through :browser
 
