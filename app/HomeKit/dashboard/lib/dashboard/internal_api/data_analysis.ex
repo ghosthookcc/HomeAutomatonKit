@@ -6,7 +6,7 @@ defmodule Dashboard.InternalApi.DataAnalysis do
     plotting_script = Path.join(Workspace.data_analysis_root(), "plot.R")
     plot_path       = Path.join(Workspace.plots_root(), "plot.png")
 
-    {output, status} = 
+    {_output, _status} = 
       System.cmd("Rscript", [jit_runner, plotting_script, plot_path],  
                  stderr_to_stdout: true,
                  cd: Workspace.data_analysis_root())

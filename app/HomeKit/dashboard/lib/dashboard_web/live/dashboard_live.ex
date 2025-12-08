@@ -3,6 +3,5 @@ defmodule DashboardWeb.DashboardLive do
 
   alias Dashboard.InternalApi.DataAnalysis
 
-  import Dashboard.InternalApi.DataAnalysis
   import DashboardWeb.DataAnalysisComponents
 end
