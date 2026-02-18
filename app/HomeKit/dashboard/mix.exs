@@ -63,10 +63,11 @@ defmodule Dashboard.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.26"},
-      {:jason, "~> 1.2"},
+      {:jason, "~> 1.4"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:mishka_chelekom, "~> 0.0.8", only: :dev}
+      {:mishka_chelekom, "~> 0.0.8", only: :dev},
+      {:ecto_sqlite3, "~> 0.17.0"}
     ]
   end
 

@@ -7,7 +7,7 @@
 # General application configuration
 import Config
 
-config :dashboard,
+config :dashboard, ecto_repos: [Dashboard.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint

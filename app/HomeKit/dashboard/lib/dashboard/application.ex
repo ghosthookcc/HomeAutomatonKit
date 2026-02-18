@@ -9,10 +9,17 @@ defmodule Dashboard.Application do
       DashboardWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:dashboard, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Dashboard.PubSub},
+      {Ecto.Migrator,
+        repos: Application.fetch_env!(:dashboard, :ecto_repos),
+        skip: System.get_env("SKIP_MIGRATIONS") ==  "true"},
 
       DashboardWeb.Endpoint,
       Dashboard.PluginRegistry,
-      Dashboard.PluginSupervisor
+      Dashboard.PluginSupervisor,
+
+      Dashboard.Repo,
+
+      Dashboard.Services.ImportOnStart
     ]
 
     opts = [strategy: :one_for_one, name: Dashboard.Supervisor]

@@ -28,10 +28,10 @@ NANOPB_PLUGIN := $(shell python -c "import nanopb.generator; import os; print(os
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	URL := $(PROTO_URL_OSX)
+	URL := $(PROTO_URL_LINUX)
 endif
 ifeq ($(UNAME_S),Darwin)
-	URL := $(PROTO_URL_LINUX)
+	URL := $(PROTO_URL_OSX)
 endif
 
 endif
@@ -41,6 +41,7 @@ PROTOC=protoc
 all: install setup proto
 
 install:
+	winget install bufbuild.buf || echo "Buf already installed or up to date"
 ifeq ($(MODULE),go)
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
@@ -81,6 +82,7 @@ endif
 ifeq ($(MODULE),go)
 	protoc -I$(PROTO_DIR) \
 		   -I$(PROTO_DIR)/include \
+		   --descriptor_set_out=services.desc \
 	       --go_out=$(OUT_IMPL_DIR) --go_opt=paths=source_relative \
 	       --go-grpc_out=$(OUT_IMPL_DIR) --go-grpc_opt=paths=source_relative \
 	       $(PROTO_FILES)
@@ -88,24 +90,27 @@ endif
 ifeq ($(MODULE),python)
 	protoc -I$(PROTO_DIR) \
 		   -I$(PROTO_DIR)/include \
+		   --descriptor_set_out=services.desc \
 	       --python_out=$(OUT_IMPL_DIR) \
 	       $(PROTO_FILES)
 endif
 ifeq ($(MODULE),java)
 	protoc -I$(PROTO_DIR) \
 		   -I$(PROTO_DIR)/include \
+		   --descriptor_set_out=services.desc \
 	       --java_out=$(OUT_IMPL_DIR) \
 	       $(PROTO_FILES)
 endif
 ifeq ($(MODULE),esp32)
 	@$(foreach file,$(INCLUDE_FILES), \
 		echo Generating Include File $(file) && \
-		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \
+		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --descriptor_set_out=services.desc --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \
 	) echo Done
 	@$(foreach file,$(PROTO_FILES), \
 		echo Generating $(file) && \
-		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \
+		protoc -I$(PROTO_DIR) -I$(PROTO_DIR)/include --descriptor_set_out=services.desc --plugin=protoc-gen-nanopb=$(NANOPB_PLUGIN) --nanopb_out=$(OUT_IMPL_DIR) "$(file)" && \
 	) echo Done
 endif
+	python protoc-generate-metadata.py
 
 .PHONY: all install setup proto

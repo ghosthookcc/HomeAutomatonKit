@@ -1,0 +1,14 @@
+[
+  {
+    "file": "impl/echo-service/echo-service.proto",
+    "service": "EchoService",
+    "service_name": "echo-service",
+    "timeout_ms": 30000
+  },
+  {
+    "file": "impl/sensor-data-collection-service/sensor-data-collection-service.proto",
+    "service": "DataCollectionService",
+    "service_name": "SensorDataCollectionService",
+    "timeout_ms": 10000
+  }
+]

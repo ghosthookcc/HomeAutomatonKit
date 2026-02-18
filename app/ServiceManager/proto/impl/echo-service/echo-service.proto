@@ -5,8 +5,12 @@ package echo;
 option go_package = "github.com/ghosthookcc/HomeAutomatonKit/app/ServiceManager/proto-stubs/impl/go/echo-service";
 
 import "common/service.proto";
+import "common/service_metadata.proto";
 
 service EchoService {
+    option (ServicePackage.service_name) = "echo-service";
+    option (ServicePackage.timeout_ms) = 30000;
+
     rpc Echo (Message) returns (Message);
 }
 

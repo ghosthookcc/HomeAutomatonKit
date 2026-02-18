@@ -1,0 +1,9 @@
+version: v1
+name: your-org/your-repo/test
+lint:
+  ignore_only:
+    IMPORT_USED:
+      - proto/impl/echo-service/echo-service.proto
+build:
+  excludes:
+    - proto/include

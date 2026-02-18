@@ -1,0 +1,6 @@
+version: v2
+plugins:
+  - path: ["python", "./protoc-generate-metadata"]
+    out: ./generated
+managed:
+  enabled: true
