@@ -20,6 +20,15 @@ if System.get_env("PHX_SERVER") do
   config :dashboard, DashboardWeb.Endpoint, server: true
 end
 
+workspace_root = System.get_env("WORKSPACE_ROOT") || File.cwd!()
+data_analysis_root = System.get_env("DATA_ANALYSIS_ROOT") || Path.join(workspace_root, "../../DataAnalysis")
+plots_root = System.get_env("PLOTS_ROOT") || Path.join(data_analysis_root, "plots")
+
+config :dashboard, Dashboard.Workspace,
+  workspace_root: workspace_root, 
+  data_analysis_root: data_analysis_root, 
+  plots_root: plots_root
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -55,7 +64,7 @@ if config_env() == :prod do
 
   config :dashboard, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
-  config :dashboard, DashboardWeb.Endpoint,
+  config :dashboard, Dashboard.Endpoint, 
     url: [host: host, port: 443, scheme: "https"],
     http: [
       # Enable IPv6 and bind on all interfaces.

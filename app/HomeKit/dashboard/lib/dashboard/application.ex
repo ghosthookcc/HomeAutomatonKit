@@ -5,6 +5,9 @@ defmodule Dashboard.Application do
 
   @impl true
   def start(_type, _args) do
+    IO.puts("Workspace DEBUG:")
+    IO.inspect(Dashboard.Workspace.config())
+
     children = [
       DashboardWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:dashboard, :dns_cluster_query) || :ignore},

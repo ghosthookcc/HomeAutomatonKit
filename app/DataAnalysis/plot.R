@@ -1,6 +1,6 @@
 library(ggplot2)
 
-data <- read.csv("output.csv", stringsAsFactors = FALSE)
+data <- read.csv("data/output.csv", stringsAsFactors = FALSE)
 
 data$date <- as.POSIXct(data$date, format="%Y-%m-%d %H:%M:%S")
 
@@ -31,4 +31,4 @@ plot <- ggplot(data, aes(x = date, y = humidity)) +
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
-ggsave("humidity_plot.png", plot = plot, width = 12, height = 6, dpi = 300)
+ggsave("plots/plot.png", plot = plot, width = 12, height = 6, dpi = 300)
