@@ -11,7 +11,33 @@ defmodule Dashboard.PluginRegistry do
                               %{module: module,
                                 path: path,
                                 static_path: static_path,
-                                pid: pid}))
+                                pid: pid,
+                                status: if(pid, do: :enabled, else: :disabled)}))
+  end
+
+  def update(name, fun) do
+    Agent.update(__MODULE__, fn plugins ->
+      Map.update!(plugins, name, fun)
+    end)
+  end
+
+  def summary do
+    {:ok, configs} = Dashboard.PluginConfig.load_configs()
+    loaded_plugins = __MODULE__.list()
+
+    Enum.reduce(configs, %{enabled: 0, disabled: 0, errors: 0}, fn config, acc ->
+      atom = String.to_atom(config["atom"])
+      case Map.get(loaded_plugins, atom) do
+        nil ->
+          if config["enabled"], do: %{acc | errors: acc.errors + 1}, else: %{acc | disabled: acc.disabled + 1}
+        %{pid: pid} ->
+          cond do
+          pid == nil -> %{acc | disabled: acc.disabled + 1}
+          Process.alive?(pid) -> %{acc | enabled: acc.enabled + 1}
+          true -> %{acc | errors: acc.errors + 1}
+        end
+      end
+    end)
   end
 
   def unregister(name) do

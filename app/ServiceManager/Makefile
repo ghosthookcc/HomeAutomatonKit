@@ -1,16 +1,9 @@
 PROTO_VERSION = 33.1
 
-PROTO_DIR=proto
-IGNORE_DIR := include # relative to PROTO_DIR
+define newline
 
-PROTO_URL_WIN = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-win64.zip
-PROTO_URL_LINUX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-linux-x86_64.zip
-PROTO_URL_OSX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-osx-x86_64.zip
 
-OUT_DIR=proto-stubs/impl
-MODULE ?= go
-
-OUT_IMPL_DIR := $(OUT_DIR)/$(MODULE)
+endef
 
 ifeq ($(OS),Windows_NT)
 PROTO_FILES := $(shell powershell -NoProfile -Command \
@@ -22,9 +15,11 @@ INCLUDE_FILES := $(shell powershell -NoProfile -Command \
 	"Where-Object { ($$_.FullName -replace '\\\\','/') -match '\\include\\' } | " \
 	"ForEach-Object { ($$_.FullName -replace '\\\\','/').Substring($$PWD.Path.Length + 1) }")
 NANOPB_PLUGIN := $(shell python -c "import nanopb.generator; import os; print(os.path.join(os.path.dirname(nanopb.generator.__file__), 'protoc-gen-nanopb.bat'))")
+EXE := .exe
 else
 PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto' ! -path '$(PROTO_DIR)/include/*' -printf '%P\n')
 NANOPB_PLUGIN := $(shell python -c "import nanopb.generator; import os; print(os.path.join(os.path.dirname(nanopb.generator.__file__), 'protoc-gen-nanopb'))")
+EXE := 
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -35,6 +30,24 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 endif
+
+PROTO_DIR=proto
+IGNORE_DIR := include
+
+PROTO_URL_WIN = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-win64.zip
+PROTO_URL_LINUX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-linux-x86_64.zip
+PROTO_URL_OSX = https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTO_VERSION)/protoc-$(PROTO_VERSION)-osx-x86_64.zip
+
+OUT_DIR=proto-stubs/impl
+MODULE ?= go
+
+OUT_IMPL_DIR := $(OUT_DIR)/$(MODULE)
+GO_BIN_DIR := $(OUT_IMPL_DIR)/bin
+
+IMPL_SUBDIR := $(OUT_DIR)/$(MODULE)/impl
+SERVICES := $(patsubst %/,%,$(wildcard proto-stubs/impl/go/impl/*/))
+SERVICES_IMPL := $(patsubst %/,%,$(wildcard service/*))
+SERVICE_BINS := $(foreach dir,$(SERVICES),$(GO_BIN_DIR)/$(notdir $(dir))$(EXE))
 
 PROTOC=protoc
 
@@ -76,8 +89,10 @@ proto:
 	@echo "==> Generating '$(MODULE)' gRPC code . . ."
 ifeq ($(OS),Windows_NT)
 	powershell -Command "New-Item -ItemType Directory -Path '$(OUT_IMPL_DIR)' -Force"
+	powershell -Command "New-Item -ItemType Directory -Path '$(GO_BIN_DIR)' -Force"
 else
 	mkdir -p $(OUT_IMPL_DIR)
+	mkdir -p $(GO_BIN_DIR)
 endif
 ifeq ($(MODULE),go)
 	protoc -I$(PROTO_DIR) \
@@ -113,4 +128,21 @@ ifeq ($(MODULE),esp32)
 endif
 	python protoc-generate-metadata.py
 
-.PHONY: all install setup proto
+print-debug:
+	@echo "IMPL_SUBDIR: $(IMPL_SUBDIR)"
+	@echo "SERVICES: $(SERVICES)"
+	@echo "SERVICES_IMPL: $(SERVICES_IMPL)"
+	@echo "SERVICE_BINS: $(SERVICE_BINS)"
+	@echo "GO_BIN_DIR: $(GO_BIN_DIR)"
+	@echo "EXE: $(EXE)"
+
+go-build:
+	@echo "==> Building Go binaries for each service . . ."
+	$(foreach file,$(SERVICES_IMPL),go build -o $(GO_BIN_DIR) $(file))
+	@echo "==> Done building Go binaries."
+
+$(GO_BIN_DIR)/%$(EXE):
+	@echo "==> Building $* . . ."
+	go build -o $@ ./$(IMPL_SUBDIR)/$*
+
+.PHONY: all install setup proto go-build $(SERVICE_BINS) print-debug

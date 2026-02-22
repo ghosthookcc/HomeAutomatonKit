@@ -15,7 +15,6 @@ defmodule Dashboard.Services.ServiceStatus do
     field :last_updated, :utc_datetime
     belongs_to :service, Dashboard.Services.Service,
                 foreign_key: :service_id,
-                references: :id,
                 type: :binary_id
     timestamps()
   end
@@ -24,5 +23,6 @@ defmodule Dashboard.Services.ServiceStatus do
     status
     |> cast(attrs, [:service_id, :status, :last_updated])
     |> validate_required([:service_id, :status, :last_updated])
+    |> unique_constraint(:service_id)
   end
 end

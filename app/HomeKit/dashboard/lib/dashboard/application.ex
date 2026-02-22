@@ -22,7 +22,9 @@ defmodule Dashboard.Application do
 
       Dashboard.Repo,
 
-      Dashboard.Services.ImportOnStart
+      Dashboard.Services.ImportOnStart,
+      Dashboard.Services.ServiceRegistry,
+      Dashboard.Services.ServiceManager
     ]
 
     opts = [strategy: :one_for_one, name: Dashboard.Supervisor]

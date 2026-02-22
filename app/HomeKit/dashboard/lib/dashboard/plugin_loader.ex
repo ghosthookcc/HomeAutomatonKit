@@ -68,6 +68,7 @@ defmodule Dashboard.PluginLoader do
       nil -> {:error, :not_found}
       plugin ->
         if plugin.pid, do: PluginSupervisor.stop_plugin(plugin.pid)
+        PluginRegistry.update(atom, fn p -> %{p | pid: nil, status: :disabled} end)
         PluginRegistry.unregister(atom)
         PluginConfig.update_config(config["atom"], false)
         {:ok, atom}

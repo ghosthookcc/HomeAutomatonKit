@@ -8,7 +8,9 @@ defmodule Dashboard.Services.Service do
   schema "service" do
     field :service_name, :string
     field :timeout_ms, :integer
-    has_many :statuses, Dashboard.Services.ServiceStatus, foreign_key: :service_id
+
+    has_one :status, Dashboard.Services.ServiceStatus, foreign_key: :service_id
+
     timestamps()
   end
 
