@@ -11,7 +11,7 @@ defmodule DashboardWeb.DataAnalysisComponents do
            class="block shadow" />
       <p class="absolute
                 top-0 left-0
-                w-full bg-black/80 text-white
+                w-full bg-black text-white
                 px-3 py-1 text-sm">
         Updated: <%= @plot.timestamp %>
       </p>

@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "endpoint",
+        "title": "Phoenix Endpoint",
+        "description": "Main endpoint for the Phoenix web server.",
+        "content": "The Endpoint module sets up HTTP/HTTPS connections, sockets, and plugs. It serves as the interface between the Phoenix web server and the internal LiveView/dashboard logic.",
+        "code": "defmodule DashboardWeb.Endpoint do\n  use Phoenix.Endpoint, otp_app: :dashboard\nend"
+    }
+  ]
+}

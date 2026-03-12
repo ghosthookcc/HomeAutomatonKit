@@ -83,3 +83,6 @@ if (process.env.NODE_ENV === "development") {
   })
 }
 
+window.addEventListener("phx:copy_to_clipboard", e => {
+  navigator.clipboard.writeText(e.detail.code)
+})

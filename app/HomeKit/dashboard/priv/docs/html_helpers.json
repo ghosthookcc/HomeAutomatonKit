@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "html_helpers",
+        "title": "HTML Helpers",
+        "description": "Reusable helper functions for HEEx templates.",
+        "content": "This module provides helper functions to format text, render links, or create UI elements. It is imported into all LiveViews and templates for consistency.",
+        "code": "defmodule DashboardWeb.HtmlHelpers do\n  def format_date(date), do: Calendar.strftime(date, \"%Y-%m-%d\")\nend"
+    }
+  ]
+}

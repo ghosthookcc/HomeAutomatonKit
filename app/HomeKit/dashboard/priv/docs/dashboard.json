@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "dashboard",
+        "title": "Dashboard Context",
+        "description": "Top level context module for the HomeAutomatonKit dashboard.",
+        "content": "The Dashboard module defines the main application context. It acts as the boundary between the Phoenix web layer and the internal system logic. The context coordinates the plugin system, workspace state, and data analysis modules.",
+        "code": "defmodule Dashboard do end"
+    }
+  ]
+}

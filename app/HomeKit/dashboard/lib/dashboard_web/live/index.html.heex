@@ -1,43 +1,36 @@
-<nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-  <div class="px-3 py-3 lg:px-5 lg:pl-3">
-    <div class="flex items-center justify-end">
-      <div class="flex items-center">
-          <div class="flex items-center ms-3">
-            <div>
-              <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
-                <span class="sr-only">Open user menu</span>
-                <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
-              </button>
-            </div>
-            <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-              <ul class="py-1" role="none">
-                <li>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</a>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Settings</a>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Earnings</a>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+<body class="overflow-hidden">
+<nav class="fixed top-0 z-50 w-full bg-[#181a1b] border-b border-gray-800">
+  <div class="px-4 py-3 flex items-center justify-between">
+
+    <div class="flex items-center space-x-4">
+      <span class="text-white font-bold text-lg">HomeAutomatonKit</span>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <button class="text-gray-300 hover:text-white relative">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6.002 6.002 0 00-5-5.917V5a2 2 0 10-4 0v.083A6.002 6.002 0 004 11v3c0 .386-.149.735-.395 1.001L2 17h5m5 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <span class="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+      </button>
+
+      <div class="relative">
+        <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300" aria-expanded="false">
+          <span class="sr-only">Open user menu</span>
+          <img class="w-10 h-10 rounded-full" src="https://placebear.com/200/300" alt="user photo">
+        </button>
+      </div>
     </div>
   </div>
 </nav>
-<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
-   <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-[#181a1b]
+                                border-r border-gray-800 sm:translate-x-0" aria-label="Sidebar">
+   <div class="h-full px-3 pb-4 overflow-y-auto bg-[#181a1b]">
       <ul class="space-y-2 font-medium">
          <li>
              <.link patch={~p"/?page=dashboard"} class={sidebar_link_class(@page, "dashboard")}>
-                 <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
+                 <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
                     <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
                     <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
                  </svg>
@@ -77,6 +70,28 @@
             </.link>
          </li>
          <li>
+            <.link patch={~p"/?page=documentation"} class={sidebar_link_class(@page, "documentation")}>
+              <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                   aria-hidden="true"
+                   xmlns="http://www.w3.org/2000/svg"
+                   fill="none"
+                   viewBox="0 0 18 16"
+                   stroke="currentColor"
+                   stroke-width="1.5">
+
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 1h8l4 4v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M11 1v4h4"/>
+
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M5 8h6M5 11h6"/>
+              </svg>
+               <span class="flex-1 ms-3 whitespace-nowrap">Documentation</span>
+            </.link>
+         </li>
+         <li>
             <.link patch={~p"/?page=settings"} class={sidebar_link_class(@page, "settings")}>
                <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z"/>
@@ -90,7 +105,7 @@
    </div>
 </aside>
 
-<main class="ml-64 mt-[57px] min-h-[calc(100vh-57px)] bg-gray-100 dark:bg-gray-900 transition-all" id="content-container">
+<main class="ml-64 mt-[57px] min-h-[calc(100vh-57px)] bg-black-100 dark:bg-gray-900 transition-all" id="content-container">
   <%= case @page do %>
     <% "dashboard" -> %>
       <%= live_render(@socket, DashboardLive, id: "dashboard") %>
@@ -102,9 +117,12 @@
       <%= live_render(@socket, PluginsLive, id: "plugins") %>
     <% "templates" -> %>
       <%= live_render(@socket, TemplatesLive, id: "templates") %>
+    <% "documentation" -> %>
+      <%= live_render(@socket, DocumentationLive, id: "documentation") %>
     <% "settings" -> %>
       <%= live_render(@socket, SettingsLive, id: "settings") %>
     <% _ -> %>
       # Implement default view?
   <% end %>
 </main>
+</body>

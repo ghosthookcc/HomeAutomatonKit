@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "web_helpers",
+        "title": "Web Helpers",
+        "description": "Shared helpers for views and templates.",
+        "content": "The web helpers module defines common functions for rendering HTML, formatting data, and generating links. These helpers are used across LiveViews and templates.",
+        "code": "defmodule DashboardWeb do\n  def view do\n    quote do\n      use Phoenix.View\n      import DashboardWeb.Helpers\n    end\n  end\nend"
+    }
+  ]
+}

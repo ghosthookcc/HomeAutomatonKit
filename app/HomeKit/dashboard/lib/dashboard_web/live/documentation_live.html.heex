@@ -1,0 +1,48 @@
+<div class="flex h-screen bg-[#181a1b]">
+  <aside class="w-72 bg-[#181a1b] border-gray-800 border-r overflow-y-auto">
+    <div class="p-6 border-b border-gray-800">
+      <h1 class="text-xl font-bold">
+        Developer Docs
+      </h1>
+
+      <input type="text"
+             name="query"
+             placeholder="Search documentation..."
+             phx-keyup="search"
+             phx-debounce="300"
+             class="mt-4 w-full border rounded px-3 py-2 text-sm" />
+    </div>
+
+    <nav class="p-4 space-y-1">
+      <%= for doc <- @filtered_docs do %>
+        <a href={"##{doc["id"]}"}
+           class="block text-sm px-3 py-2 rounded hover:bg-gray-900">
+          <%= doc["title"] %>
+        </a>
+      <% end %>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto p-10">
+    <div class="max-w-4xl mx-auto space-y-20">
+      <%= for doc <- @filtered_docs do %>
+        <section id={doc["id"]}>
+          <h2 class="text-3xl font-bold mb-3">
+            <%= doc["title"] %>
+          </h2>
+          <p class="text-gray-500 mb-6">
+            <%= doc["description"] %>
+          </p>
+          <%= if doc["content"] do %>
+            <div class="prose max-w-none">
+              <p><%= doc["content"] %></p>
+            </div>
+          <% end %>
+          <%= if doc["code"] do %>
+            <pre class="bg-gray-900 text-green-300 text-sm p-4 rounded-lg mt-6 overflow-x-auto"><code><%= doc["code"] %></code></pre>
+          <% end %>
+        </section>
+      <% end %>
+    </div>
+  </main>
+</div>

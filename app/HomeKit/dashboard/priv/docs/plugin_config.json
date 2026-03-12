@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "plugin_config",
+        "title": "Plugin Configuration",
+        "description": "Configuration manager for plugins.",
+        "content": "This module loads plugin configuration files and converts configuration data into Elixir structures used by the plugin system.",
+        "code": "Dashboard.PluginConfig.load(plugin)"
+    }
+  ]
+}

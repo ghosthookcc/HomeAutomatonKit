@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "controller",
+        "title": "Controller",
+        "description": "Phoenix controllers for HTTP requests.",
+        "content": "Controllers handle HTTP requests, render views, and return responses. In this project, controllers are minimal because most of the interface is LiveView-based.",
+        "code": "defmodule DashboardWeb.PageController do\n  use DashboardWeb, :controller\n\n  def index(conn, _params) do\n    render(conn, \"index.html\")\n  end\nend"
+    }
+  ]
+}

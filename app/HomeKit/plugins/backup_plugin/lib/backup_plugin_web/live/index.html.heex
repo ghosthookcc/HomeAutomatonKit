@@ -1,63 +1,105 @@
-<div class="p-10">
-<form id="upload-form" phx-change="validate" phx-submit="save" class="space-y-4">
-  <div id="dropzone"
-       phx-drop-target={@uploads.uploader.ref}
-       phx-hook="Dropzone"
-       class="flex flex-col items-center justify-center w-full h-64 border-4 border-dashed border-gray-300 rounded-2xl cursor-pointer bg-gray-50 hover:border-blue-400 transition-colors">
-    <.live_file_input upload={@uploads.uploader} class="hidden" />
-    <p class="text-gray-500 text-center mt-4">Drag & drop files or folders here, or click to select</p>
+<div class="min-h-screen w-full bg-[#181a1b] text-gray-200 p-10 font-sans space-y-12">
+  
+  <div class="max-w-4xl mx-auto">
+    <form id="upload-form" phx-change="validate" phx-submit="save" class="space-y-6">
+      <div id="dropzone"
+           phx-drop-target={@uploads.uploader.ref}
+           phx-hook="Dropzone"
+           class="group flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-[#2d3134] rounded-3xl cursor-pointer bg-[#1e2021] hover:border-blue-500/50 hover:bg-[#212425] transition-all duration-300 relative overflow-hidden">
+        
+        <.live_file_input upload={@uploads.uploader} class="hidden" />
+        
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]"></div>
 
-  <p :for={err <- upload_errors(@uploads.uploader)} class="alert alert-danger">
-    {error_to_string(err)}
-  </p>
+        <div class="z-10 text-center">
+          <div class="mx-auto w-16 h-16 mb-4 rounded-2xl bg-[#181a1b] flex items-center justify-center border border-[#2d3134] group-hover:scale-110 group-hover:border-blue-500/50 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+          </div>
+          <p class="text-gray-300 font-medium text-lg">Drag & drop files or folders here</p>
+          <p class="text-gray-500 text-sm mt-1">or click to browse your computer</p>
+        </div>
+
+        <div :for={err <- upload_errors(@uploads.uploader)} class="mt-4 px-4 py-2 rounded-lg bg-red-900/20 border border-red-500/30 text-red-400 text-sm">
+          {error_to_string(err)}
+        </div>
+      </div>
+
+      <ul class="space-y-3">
+        <%= for entry <- @uploads.uploader.entries do %>
+          <li class="flex items-center gap-4 p-4 rounded-xl border border-[#2d3134] bg-[#1e2021] animate-in fade-in slide-in-from-top-2">
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between mb-2 items-end">
+                <span class="text-sm font-medium text-gray-200 truncate leading-none"><%= entry.client_name %></span>
+                <span class="text-xs font-mono text-blue-400"><%= entry.progress %>%</span>
+              </div>
+              <div class="w-full h-1.5 bg-[#181a1b] rounded-full overflow-hidden">
+                <div class="h-full bg-blue-600 transition-all duration-300 ease-out" style={"width: #{entry.progress}%"}></div>
+              </div>
+            </div>
+            <button type="button" phx-click="cancel-upload" phx-value-ref={entry.ref} 
+                    class="p-2 hover:bg-red-900/30 text-gray-500 hover:text-red-400 rounded-lg transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </li>
+        <% end %>
+      </ul>
+
+      <button type="submit" 
+              class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-blue-900/20 active:scale-[0.98]">
+        Start Upload
+      </button>
+    </form>
   </div>
 
-  <ul class="mt-4 space-y-2">
-    <%= for entry <- @uploads.uploader.entries do %>
-      <li class="flex items-center justify-between p-2 border rounded shadow-sm bg-white">
-        <span><%= entry.client_name %></span>
-        <span><%= entry.progress %>%</span>
-        <span><button type="button" phx-click="cancel-upload" phx-value-ref={entry.ref} aria-label="cancel">&times</button></span>
-      </li>
-    <% end %>
-  </ul>
+  <div class="max-w-6xl mx-auto">
+    <div class="rounded-3xl border border-[#2d3134] bg-[#1e2021] overflow-hidden shadow-2xl">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-[#2d3134] bg-[#25282a]/50">
+            <th class="px-6 py-4 text-gray-400 uppercase text-[11px] font-bold tracking-widest">Filename</th>
+            <th class="px-6 py-4 text-gray-400 uppercase text-[11px] font-bold tracking-widest text-center">Type</th>
+            <th class="px-6 py-4 text-gray-400 uppercase text-[11px] font-bold tracking-widest text-right">Extension</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#2d3134]">
+          <tr class="hover:bg-[#25282a] transition-colors group">
+            <td class="px-6 py-4 text-gray-200 font-medium">Test</td>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-block px-2 py-1 rounded bg-black/30 text-xs text-gray-400">File</span>
+            </td>
+            <td class="px-6 py-4 font-mono text-gray-500 text-sm text-right">txt</td>
+          </tr>
 
-  <button
-    type="submit"
-    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors">
-    Upload
-  </button>
-</form>
-</div>
+          <tr class="hover:bg-[#25282a] transition-colors group">
+            <td class="px-6 py-4 font-medium italic">
+              <.link navigate={"/#"} class="text-blue-400 hover:text-blue-300 transition-colors">TestMount</.link>
+            </td>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-block px-2 py-1 rounded bg-blue-900/20 text-xs text-blue-400">Folder</span>
+            </td>
+            <td class="px-6 py-4 text-gray-600 text-right">—</td>
+          </tr>
 
-<div class="p-10">
-<Mishka.table border="large" rounded="extra_large" text_position="center" header_border="large" rows_border="medium" cols_border="medium">
-    <:header>Filename</:header>
-    <:header>Type</:header>
-    <:header>Extension</:header>
-
-    <Mishka.tr>
-      <Mishka.td>Test</Mishka.td>
-      <Mishka.td>File</Mishka.td>
-      <Mishka.td>txt</Mishka.td>
-    </Mishka.tr>
-
-    <Mishka.tr>
-      <Mishka.td>
-          <.link navigate={"/#"} class={["px-3 py-2 rounded-md",
-          "text-blue-700 font-semibold"]}>TestMount</.link>
-      </Mishka.td>
-      <Mishka.td>Folder</Mishka.td>
-      <Mishka.td>-</Mishka.td>
-    </Mishka.tr>
-
-    <Mishka.tr>
-      <Mishka.td>Test2</Mishka.td>
-      <Mishka.td>File</Mishka.td>
-      <Mishka.td>exe</Mishka.td> 
-    </Mishka.tr>
-
-    <:footer>Total Paths</:footer>
-    <:footer>3</:footer>
-</Mishka.table>
+          <tr class="hover:bg-[#25282a] transition-colors group">
+            <td class="px-6 py-4 text-gray-200 font-medium">Test2</td>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-block px-2 py-1 rounded bg-black/30 text-xs text-gray-400">File</span>
+            </td>
+            <td class="px-6 py-4 font-mono text-gray-500 text-sm text-right">exe</td> 
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="bg-[#1b1d1e]/50 border-t border-[#2d3134]">
+            <td class="px-6 py-4 text-gray-500 text-sm font-medium">Total Paths</td>
+            <td></td>
+            <td class="px-6 py-4 text-blue-500 font-bold text-right text-lg">3</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
 </div>

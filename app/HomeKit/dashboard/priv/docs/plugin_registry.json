@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "plugin_registry",
+        "title": "Plugin Registry",
+        "description": "Registry for active plugins.",
+        "content": "The PluginRegistry tracks all plugins loaded by the system. It provides APIs for listing plugins, retrieving plugin modules, and managing plugin metadata.",
+        "code": "Dashboard.PluginRegistry.list_plugins()"
+    }
+  ]
+}

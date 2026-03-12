@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "data_analysis",
+        "title": "Data Analysis",
+        "description": "Interface for statistical data processing.",
+        "content": "This module connects the dashboard with external data analysis tools such as R scripts. Sensor data can be exported and analyzed to generate charts and reports.",
+        "code": "Dashboard.DataAnalysis.run_analysis(dataset)"
+    }
+  ]
+}

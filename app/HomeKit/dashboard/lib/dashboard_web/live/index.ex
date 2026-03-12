@@ -1,7 +1,7 @@
 defmodule DashboardWeb.Index do
   use DashboardWeb, :live_view
 
-  alias DashboardWeb.{DashboardLive, ServiceManagerLive, UsersLive, PluginsLive, TemplatesLive, SettingsLive}
+  alias DashboardWeb.{DashboardLive, ServiceManagerLive, UsersLive, PluginsLive, TemplatesLive, DocumentationLive, SettingsLive}
 
   def mount(_params, _session, socket) do
 
@@ -27,9 +27,9 @@ defmodule DashboardWeb.Index do
   end
 
   defp sidebar_link_class(current, target) do
-    base = "flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+    base = "flex items-center p-2 rounded-lg hover:bg-black dark:hover:bg-gray-700"
     if current == target do
-      base <> " bg-gray-200 dark:bg-gray-700"
+      base <> " bg-gray-900 dark:bg-gray-1000"
     else
       base
     end

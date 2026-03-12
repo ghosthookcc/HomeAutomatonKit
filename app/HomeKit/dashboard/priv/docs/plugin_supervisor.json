@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "plugin_supervisor",
+        "title": "Plugin Supervisor",
+        "description": "Supervisor responsible for plugin processes.",
+        "content": "Plugins that require background processes are started under the PluginSupervisor. This isolates plugin failures and ensures the system remains stable.",
+        "code": "Supervisor.start_child(Dashboard.PluginSupervisor, plugin_spec)"
+    }
+  ]
+}

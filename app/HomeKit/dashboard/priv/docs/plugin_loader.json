@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "plugin_loader",
+        "title": "Plugin Loader",
+        "description": "Dynamic plugin loading system.",
+        "content": "The PluginLoader scans the plugins directory, compiles plugin source files, and loads them into the Erlang VM. This allows the dashboard to extend its functionality without modifying the core application.",
+        "code": "Dashboard.PluginLoader.load_plugins()"
+    }
+  ]
+}

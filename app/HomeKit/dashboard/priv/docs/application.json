@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "application",
+        "title": "OTP Application",
+        "description": "Application entry point and supervision tree.",
+        "content": "Dashboard.Application starts the Phoenix endpoint, plugin registry, and other system services. It defines the supervision tree that ensures system processes are fault tolerant.",
+        "code": "def start(_type, _args) do\n  children = [\n    Dashboard.PluginRegistry,\n    Dashboard.PluginSupervisor,\n    DashboardWeb.Endpoint\n  ]\nend"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "workspace",
+        "title": "Workspace State",
+        "description": "Runtime workspace state manager.",
+        "content": "The Workspace module stores the active runtime state of the dashboard including loaded plugins, UI layout state, and active data sources.",
+        "code": "Dashboard.Workspace.get_state()"
+    }
+  ]
+}

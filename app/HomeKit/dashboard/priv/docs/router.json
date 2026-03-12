@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "router",
+        "title": "Router",
+        "description": "Defines routes and LiveViews for the application.",
+        "content": "The Router maps URL paths to controllers and LiveViews. It sets up LiveView routes for special routes.",
+        "code": "scope \"/\", DashboardWeb do\n  pipe_through :browser\n  live \"/dashboard\", DashboardLive\n  live \"/documentation\", DocumentationLive\nend"
+    }
+  ]
+}

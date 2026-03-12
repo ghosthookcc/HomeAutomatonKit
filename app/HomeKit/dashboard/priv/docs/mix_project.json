@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "mix_project",
+        "title": "Mix Project",
+        "description": "Project configuration file.",
+        "content": "The mix.exs file defines dependencies, build configuration, and application metadata for the Phoenix project.",
+        "code": "def project do\n  [\n    app: :dashboard,\n    version: \"0.1.0\"\n  ]\nend"
+    }
+  ]
+}
