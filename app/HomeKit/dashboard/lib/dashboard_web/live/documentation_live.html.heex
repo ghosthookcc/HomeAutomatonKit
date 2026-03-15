@@ -23,7 +23,7 @@
     </nav>
   </aside>
 
-  <main class="flex-1 overflow-y-auto p-10">
+  <div class="flex-1 overflow-y-auto p-10 mt-15">
     <div class="max-w-4xl mx-auto space-y-20">
       <%= for doc <- @filtered_docs do %>
         <section id={doc["id"]}>
@@ -44,5 +44,5 @@
         </section>
       <% end %>
     </div>
-  </main>
+  </div>
 </div>

@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "dashboard_live",
+        "title": "Dashboard LiveView",
+        "description": "Main LiveView rendering the HomeAutomatonKit dashboard UI.",
+        "content": "This LiveView manages the interactive dashboard interface. It renders widgets, charts, and plugin components. It subscribes to updates from plugins and updates the UI in real-time.",
+        "code": "defmodule DashboardWeb.DashboardLive do\n  use DashboardWeb, :live_view\n\n  def mount(_params, _session, socket) do\n    {:ok, assign(socket, :widgets, [])}\n  end\nend"
+    }
+  ]
+}

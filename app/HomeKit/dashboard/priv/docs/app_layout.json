@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "app_layout",
+        "title": "Application Layout",
+        "description": "Shared layout used by LiveViews and controller pages.",
+        "content": "The application layout defines the main UI wrapper including navigation bars, content containers, and page structure. LiveViews render their content inside this layout.",
+        "code": "<main class=\"app-layout\">\n  <%= @inner_content %>\n</main>"
+    }
+  ]
+}

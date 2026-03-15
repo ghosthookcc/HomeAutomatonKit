@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "plugin_component",
+        "title": "Plugin Component",
+        "description": "LiveComponent wrapper for plugin-provided UI.",
+        "content": "Plugins can inject their own UI components via this wrapper. The system ensures consistent layout, styling, and communication with the main dashboard LiveView.",
+        "code": "defmodule DashboardWeb.Components.PluginComponent do\n  use DashboardWeb, :live_component\nend"
+    }
+  ]
+}

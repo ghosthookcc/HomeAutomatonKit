@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "widget_component",
+        "title": "Widget Component",
+        "description": "Base component for dashboard widgets.",
+        "content": "This component provides a wrapper for all dashboard widgets. It includes styling, title rendering, and standard layout. Plugins can use this as a base to create custom widgets.",
+        "code": "defmodule DashboardWeb.Components.WidgetComponent do\n  use DashboardWeb, :live_component\nend"
+    }
+  ]
+}

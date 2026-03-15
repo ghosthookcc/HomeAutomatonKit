@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "core_components",
+        "title": "Core Components",
+        "description": "Reusable Phoenix components used across templates.",
+        "content": "CoreComponents contains reusable UI helpers such as buttons, forms, inputs, and flash messages. These components standardize UI patterns across the application.",
+        "code": "<.button class=\"btn-primary\">Save</.button>"
+    }
+  ]
+}

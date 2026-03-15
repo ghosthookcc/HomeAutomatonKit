@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "error_templates",
+        "title": "Error Templates",
+        "description": "Templates used for rendering application errors.",
+        "content": "Phoenix uses error templates to render user-friendly messages when errors occur such as 404 Not Found or 500 Internal Server Error.",
+        "code": "<h1>Page Not Found</h1>\n<p>The requested resource could not be located.</p>"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "root_layout",
+        "title": "Root Layout",
+        "description": "Global HTML layout used by the Phoenix application.",
+        "content": "The root layout wraps all pages in the application. It includes global stylesheets, JavaScript assets, and the main HTML structure required for Phoenix LiveView.",
+        "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <title>HomeAutomatonKit</title>\n  </head>\n  <body>\n    <%= @inner_content %>\n  </body>\n</html>"
+    }
+  ]
+}

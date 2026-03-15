@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "documentation_live_template",
+        "title": "Documentation Template",
+         "description": "Template used by the DocumentationLive page.",
+        "content": "This HEEx template renders the developer documentation interface. It includes a sidebar navigation, search input, and a content area where documentation sections are rendered dynamically from JSON files.",
+        "code": "<div class=\"flex\">\n  <aside class=\"docs-sidebar\">\n    <!-- navigation -->\n  </aside>\n  <main class=\"docs-content\">\n    <!-- documentation sections -->\n  </main>\n</div>"
+    }
+  ]
+}

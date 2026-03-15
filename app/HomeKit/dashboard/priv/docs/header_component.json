@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "header_component",
+        "title": "Header Component",
+        "description": "Top bar component for the dashboard UI.",
+        "content": "The HeaderComponent renders the top navigation bar including app title, search input, and user actions. It is shared across LiveViews for consistent navigation.",
+        "code": "defmodule DashboardWeb.Components.HeaderComponent do\n  use DashboardWeb, :live_component\nend"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "documentation_live",
+        "title": "Documentation LiveView",
+        "description": "LiveView for displaying all project documentation.",
+        "content": "This LiveView loads documentation JSON files from priv/docs and renders them with search functionality. It supports code blocks and prose sections, dynamically showing plugin or module documentation.",
+        "code": "defmodule DashboardWeb.DocumentationLive do\n  use DashboardWeb, :live_view\n\n  alias Dashboard.Docs\n\n  def mount(_params, _session, socket) do\n    {:ok, assign(socket, :docs, Docs.load_docs())}\n  end\nend"
+    }
+  ]
+}

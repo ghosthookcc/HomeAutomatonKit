@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "dashboard_live_template",
+        "title": "Dashboard Live Template",
+        "description": "HEEx template for the main dashboard UI.",
+        "content": "This template renders the main dashboard layout. It contains widget containers, plugin components, and visualization areas. The layout uses TailwindCSS for styling and Phoenix LiveView for reactive updates.",
+        "code": "<div class=\"dashboard-container\">\n  <.header />\n  <div class=\"widgets-grid\">\n    <!-- dashboard widgets -->\n  </div>\n</div>"
+    }
+  ]
+}

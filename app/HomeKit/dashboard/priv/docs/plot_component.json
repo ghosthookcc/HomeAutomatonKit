@@ -1,0 +1,12 @@
+{
+  "sections":
+  [
+    {
+        "id": "plot_component",
+        "title": "Plot Component",
+        "description": "Reusable LiveComponent for displaying plots.",
+        "content": "The PlotComponent renders charts generated from data analysis. It supports live updates, resizing, and integration with plugin data streams. Typically used inside the dashboard LiveView.",
+        "code": "defmodule DashboardWeb.Components.PlotComponent do\n  use DashboardWeb, :live_component\n\n  def render(assigns) do\n    ~H\"\"\"\n    <div class=\\\"plot-container\\\">\n      <!-- Plot rendering -->\n    </div>\n    \"\"\"\n  end\nend"
+    }
+  ]
+}
